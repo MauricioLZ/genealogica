@@ -1,0 +1,42 @@
+/* .tree {
+	
+} */
+
+.treeCanvas {
+	position: absolute;
+	top: 145px;
+	height: 100%;
+}
+
+.generation {
+	display: block;
+	text-align: center;
+	margin: 90px 30px;
+	white-space: nowrap;
+}
+
+.personCard{
+	display: inline-block;
+	margin: 0px 40px;
+	font-family: arial, verdana, tahoma;
+	font-size: 11px;
+	
+	transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s;
+}
+
+/*Time for some hover effects*/
+/*We will apply the hover effect the the lineage of the element also*/
+.personCard:hover, .personCard:hover+ul li div {
+	background: #c8e4f8; 
+    color: #000;
+}
+
+/*Connector styles on hover*/
+.personCard:hover+ul li::after, 
+.personCard:hover+ul li::before, 
+.personCard:hover+ul::before, 
+.personCard:hover+ul ul::before{
+	border-color:  #94a0b4;
+}

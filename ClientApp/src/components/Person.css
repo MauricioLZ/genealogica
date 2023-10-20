@@ -1,0 +1,20 @@
+.personCard {
+    width: 220px;
+    height: 250px;
+}
+
+.personCard img {
+    width: 218px;
+    height: 160px;
+    justify-content: center;
+    object-fit: cover;
+}
+
+.personName {
+    text-align: center;
+}
+
+.dates {
+    text-align: center;
+    font-size: 0.8rem;
+}
