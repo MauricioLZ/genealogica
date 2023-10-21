@@ -1,16 +1,20 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace genealogica;
 
 public class Person 
 {
     public int Id { get; set; }
     public string? Name { get; set; }
-    public string? Surname { get; set; }
-    public string? PhotoLink { get; set; }
-    public DateOnly DateOfBirth { get; set; }
-    public DateOnly? DateOfDeath { get; set; }
-    public int Generation { get; set; }
-    public int[]? ParentsById { get; set; }
-    public int[]? PartnersById { get; set; }
-    //public Union[]? UnionsById { get; set; }
-    public int[]? ChildrenById { get; set; }
+    public string? Gender { get; set; }
+    public string? Img { get; set; }
+    public DateTime Birth { get; set; }
+    public DateTime Death { get; set; }
+    [NotMapped] public int[]? Pids { 
+        get { return new int[1] {Pid}; } 
+        set { Pid = (value != null) ? value[0] : 0; } 
+    }
+    public int Pid { get; set; }
+    public int Mid { get; set; }
+    public int Fid { get; set; }
 }

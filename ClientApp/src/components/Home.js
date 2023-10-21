@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Person } from './Person';
-import ReactCanvas from './ReactCanvas';
 import './Home.css';
+import FamilyTree from './Tree';
 
 export class Home extends Component 
 {
@@ -18,64 +17,15 @@ export class Home extends Component
         this.populatePeopleData();
     }
 
-    static drawLines(context, people) 
-    {
-        const links = [];
-
-        for (let i = 0; i < people.length; i++) 
-        {
-            const person = people[i];
-
-            if (person.partnersById != null) 
-            {
-                for (let j = 0; j < person.partnersById.length; j++) 
-                {
-                    if (!links.includes(person.partnersById[j] + '-' + person.id)) 
-                    {
-                        context.moveTo(0, 0);
-                        context.lineTo(350, 120);
-                        links.push(person.id + '-' + person.partnersById[j]);
-                    }
-                }
-            }
-
-            if (person.childrenById != null) 
-            {
-                for (let j = 0; j < person.childrenById.length; j++) 
-                {
-                    context.moveTo(0, 0);
-                    context.lineTo(350, 120);
-                    links.push(person.id + '-' + person.partnersById[j]);
-                }
-            }
-        }
-    }
-
     static renderPeople(people) 
     {
-        let generations = [];
-
-        for (let i = 0; i < people.length; i++) 
-        {
-            const gen = people[i].generation;
-
-            if (!generations.includes(gen)) 
-            {
-                generations.push(gen);
-            }
-        }
-
         return (
-            <div className='tree'>
-                <ReactCanvas className='treeCanvas' drawLines={this.drawLines} people={people}></ReactCanvas>
-                { generations.map (gen => {
-                    return <div key={gen} className='generation'>
-                        { people.filter(p => p.generation === gen).map(person => {
-                            //person.photoLink = ;
-                            return <Person key={person.id} data={person}></Person>
-                        })}
-                    </div>
-                })}
+            <div>
+                { people.length > 0 && 
+                    <FamilyTree nodes={[
+                        { id: people[0].id, pids: people[0].pid, name: people[0].name, gender: people[0].gender, img: people[0].img, dateOfBirth: people[0].dateOfBirth, dateOfDeath: people[0].dateOfDeath },
+                        ...people]} />
+                }
             </div>);
     }
 
@@ -98,15 +48,15 @@ export class Home extends Component
         const data = await response.json();
         this.setState({ people: data, loading: false });
 
-        await window.FB.api('/me?fields=picture', response => 
-        {    
-            let peopleAlt = this.state.people;
+        // await window.FB.api('/me?fields=picture', response => 
+        // {    
+        //     let peopleAlt = this.state.people;
             
-            for (let i = 0; i < peopleAlt.length; i++) 
-            {
-                peopleAlt[i].photoLink = response.picture.data.url;
-            }
-            this.setState({ people: peopleAlt });
-        });
+        //     for (let i = 0; i < peopleAlt.length; i++) 
+        //     {
+        //         peopleAlt[i].photoLink = response.picture.data.url;
+        //     }
+        //     this.setState({ people: peopleAlt });
+        // });
     }
 }

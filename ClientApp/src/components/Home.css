@@ -15,6 +15,33 @@
 	white-space: nowrap;
 }
 
+.parents {
+	display: inline-block;
+}
+
+.partner {
+	display: inline-block;
+}
+
+.parentsLink {
+	display: inline-block;
+	vertical-align: top;
+	margin: 110px -40px 0px;
+	width: 80px;
+}
+
+.parentsChildrenLink {
+	position: absolute;
+	display: inline-block;
+	margin-top: 110px;
+	margin-left: -1px;
+	height: 180px;
+}
+
+.link {
+	border: #3b3b3b solid 2px;
+}
+
 .personCard{
 	display: inline-block;
 	margin: 0px 40px;
