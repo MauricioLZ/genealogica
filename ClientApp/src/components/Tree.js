@@ -18,8 +18,8 @@ export default class Tree extends Component {
 
             nodeBinding: {
                 field_0: 'name',
-                field_1: 'dateOfBirth',
-                field_2: 'dateOfDeath',
+                field_1: 'birth',
+                field_2: 'death',
                 img_0: 'img'
             }
         });

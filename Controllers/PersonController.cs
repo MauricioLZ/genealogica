@@ -1,5 +1,7 @@
+using System.Data;
 using genealogica.DataModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 
 namespace genealogica.Controllers;
 
@@ -10,15 +12,64 @@ public class PersonController : ControllerBase
     [HttpGet]
     public IEnumerable<Person> Get()
     {
-        List<Person> people = new List<Person> {
-            new Person { Id = 1, Gender = "Male", Name = "Hugh Santanna", Img = "./images/person0.jpg", Birth = new DateTime(1907, 3, 22), Death = new DateTime(1952, 2, 11), Pids = new int[] {2} },
-            new Person { Id = 2, Gender = "Feale", Name = "Stefannie Grantte", Img = "./images/person1.jpg", Birth = new DateTime(1904, 11, 8), Death = new DateTime(1978, 5, 2), Pids = new int[] {1} },
-            new Person { Id = 3, Gender = "Female", Name = "Josefine Santanna", Img = "./images/person4.jpg", Birth = new DateTime(1941, 3, 22), Death = new DateTime(2008, 4, 7), Fid = 1, Mid = 2, Pids = new int[] {4} },
-            new Person { Id = 4, Gender = "Male", Name = "Gustav Laudron", Img = "./images/person3.jpg", Birth = new DateTime(1946, 3, 22), Death = new DateTime(2015, 2, 14), Pids = new int[] {3} },
-            new Person { Id = 5, Gender = "Male", Name = "Gilbert Laudron", Img = "./images/person2.jpg", Birth = new DateTime(1977, 3, 22), Fid = 3, Mid = 4 },
-            new Person { Id = 6, Gender = "Female", Name = "Anne Laudron", Img = "./images/person5.jpg", Birth = new DateTime(1979, 3, 22), Fid = 3, Mid = 4 }
-        };
+        Database db = new Database();
+        SqlConnection? connection;
 
-        return people.ToArray();
+        using (connection = db.Connect()) 
+        {
+            string sql = "SELECT * FROM People";
+
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    List<Person> people = new List<Person>();
+                    while (reader.Read())
+                    {
+                        Person person = new Person{
+                            Id = (int)reader["Id"],
+                            Name = reader["Name"].ToString(),
+                            Gender = reader["Gender"].ToString(),
+                            Img = reader["Img"].ToString(),
+                            Birth = (DateTime)reader["Birth"],
+                            Death = (DateTime)reader["Death"],
+                            Pid = (int)reader["Pid"],
+                            Mid = (int)reader["Mid"],
+                            Fid = (int)reader["Fid"]
+                        };
+                        people.Add(person);
+                    }
+
+                    return people.ToArray();
+                }
+            }
+        }
+    }
+
+    [HttpPost]
+    public bool Post(Person person)
+    {
+        Database db = new Database();
+        SqlConnection? connection;
+
+        using (connection = db.Connect()) 
+        {
+            string sql = "INSERT INTO People (Name, Gender, Img, Birth, Death, Mid, Fid, Pid) VALUES (@name, @gender, @img, @birth, @death, @mid, @fid, @pid)";
+
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@name", person.Name);
+                command.Parameters.AddWithValue("@gender", person.Gender);
+                command.Parameters.AddWithValue("@img", person.Img);
+                command.Parameters.Add("@birth", SqlDbType.DateTime2).Value = person.Birth;
+                command.Parameters.Add("@death", SqlDbType.DateTime2).Value = person.Death;
+                command.Parameters.AddWithValue("@mid", person.Mid);
+                command.Parameters.AddWithValue("@fid", person.Fid);
+                command.Parameters.AddWithValue("@pid", person.Pid);
+                command.CommandType = CommandType.Text;
+                command.ExecuteNonQuery();
+                return true;
+            }
+        }
     }
 }

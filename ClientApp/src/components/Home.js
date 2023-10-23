@@ -15,15 +15,21 @@ export class Home extends Component
     componentDidMount() 
     {
         this.populatePeopleData();
+        this.registerPerson();
     }
 
     static renderPeople(people) 
     {
+        people.forEach(person => {
+            person.birth = person.birth.split('T')[0];
+            person.death = person.death.split('T')[0];
+        });
+
         return (
             <div>
                 { people.length > 0 && 
                     <FamilyTree nodes={[
-                        { id: people[0].id, pids: people[0].pid, name: people[0].name, gender: people[0].gender, img: people[0].img, dateOfBirth: people[0].dateOfBirth, dateOfDeath: people[0].dateOfDeath },
+                        { id: people[0].id, pids: people[0].pid, name: people[0].name, gender: people[0].gender, img: people[0].img, birth: people[0].birth, death: people[0].death },
                         ...people]} />
                 }
             </div>);
@@ -44,7 +50,7 @@ export class Home extends Component
 
     async populatePeopleData() 
     {
-        const response = await fetch('person');
+        const response = await fetch('person', { method: 'GET'});
         const data = await response.json();
         this.setState({ people: data, loading: false });
 
@@ -58,5 +64,28 @@ export class Home extends Component
         //     }
         //     this.setState({ people: peopleAlt });
         // });
+    }
+
+    async registerPerson() 
+    {
+        const person = {
+            name: 'Rita Laudron Gutierres',
+            gender: 'Female',
+            img: '',
+            birth: '2001-07-10',
+            death: '0001-01-01',
+            pid: 0,
+            mid: 11,
+            fid: 12
+        };
+
+        // const response = await fetch('person', { 
+        //     method: 'POST', 
+        //     body: JSON.stringify(person),
+        //     headers: {
+        //         'Content-type': 'application/json; charset=UTF-8',
+        //     }
+        // });
+        // console.log(response);
     }
 }
