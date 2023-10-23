@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace genealogica;
+namespace genealogica.DataModels;
 
 public class Person 
 {

@@ -1,4 +1,4 @@
-namespace genealogica;
+namespace genealogica.DataModels;
 
 public class User 
 {

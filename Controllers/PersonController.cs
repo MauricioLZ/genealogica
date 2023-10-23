@@ -1,3 +1,4 @@
+using genealogica.DataModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace genealogica.Controllers;
@@ -6,13 +7,6 @@ namespace genealogica.Controllers;
 [Route("Person")]
 public class PersonController : ControllerBase
 {
-    private readonly ILogger<PersonController> _logger;
-
-    public PersonController(ILogger<PersonController> logger)
-    {
-        _logger = logger;
-    }
-
     [HttpGet]
     public IEnumerable<Person> Get()
     {

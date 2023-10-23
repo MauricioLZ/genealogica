@@ -1,4 +1,4 @@
-using genealogica;
+using genealogica.DataModels;
 using Microsoft.EntityFrameworkCore;
 
 public class AppDbContext : DbContext 

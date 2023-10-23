@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace genealogica;
+namespace genealogica.DataModels;
 
 [PrimaryKey(nameof(TreeId), nameof(PersonId))]
 public class TreePerson
