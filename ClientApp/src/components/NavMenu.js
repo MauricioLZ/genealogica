@@ -33,9 +33,6 @@ export class NavMenu extends Component {
               <NavItem>
                 <Button onClick={login}>Login</Button>
               </NavItem>
-              <NavItem>
-                <NavLink tag={Link} className="text-dark" to="/fetch-data">Fetch data</NavLink>
-              </NavItem>
             </ul>
           </Collapse>
         </Navbar>

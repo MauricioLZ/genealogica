@@ -1,35 +1,14 @@
-//using MySql.Data.MySqlClient;
-
 using Microsoft.Data.SqlClient;
 
 public class Database
 {
 #if DEBUG
-
-    private const string DatabaseAddress = "DESKTOP-76J9BA3";
-    private const string DatabaseUserId = "root";
-    private const string DatabaseUserPassword = "";
-
+    private const string ConnectionString = "Data Source=DESKTOP-76J9BA3;Initial Catalog=GenealogicaDB;Integrated Security=True;TrustServerCertificate=True";
+    //private const string ConnectionString = "Server=tcp:genealogica.database.windows.net,1433;Initial Catalog=GenealogicaDB;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=\"Active Directory Default\";";
 #else
-
-    private const string DatabaseAddress = "";
-    private const string DatabaseUserId = "";
-    private const string DatabaseUserPassword = "";
-
+    private const string ConnectionString = "Server=tcp:genealogica.database.windows.net,1433;Initial Catalog=GenealogicaDB;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=\"Active Directory Default\";";
 #endif
 
-    private string Server { get; set; } = DatabaseAddress;
-    public string DatabaseName { get; set; } = "Genealogica";
-    private string UserId { get; set; } = DatabaseUserId;
-    private string Password { get; set; } = DatabaseUserPassword;
-
-    private string ConnectionString
-    {
-        get
-        {
-            return "Data Source=" + DatabaseAddress + ";Initial Catalog=GenealogicaDB;Integrated Security=True;TrustServerCertificate=True";
-        }
-    }
 
     public SqlConnection? Connect()
     {

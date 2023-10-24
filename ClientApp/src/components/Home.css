@@ -2,68 +2,60 @@
 	
 } */
 
+.loginMsg {
+	margin: 200px auto 80px;
+	width: 300px;
+	height: 200px;
+	text-align: center;
+	cursor: pointer;
+}
+
+.loginMsg h1 {
+	color: #4d4fbd;
+}
+
+.firstPerson {
+	margin: 200px auto 80px;
+	width: 400px;
+	height: 150px;
+	border: 2px solid #1a9925;
+	text-align: center;
+	cursor: pointer;
+}
+
+.firstPerson:hover {
+	background-color: #efffef;
+}
+
+.firstPerson div {
+	margin: auto;
+}
+
+.firstPersonTitle {
+	margin-bottom: 30px;
+	color: #303030;
+}
+
+.firstPersonSubtitle {
+	color: #505050;
+}
+
 .treeCanvas {
 	position: absolute;
 	top: 145px;
 	height: 100%;
 }
 
-.generation {
-	display: block;
-	text-align: center;
-	margin: 90px 30px;
-	white-space: nowrap;
-}
-
-.parents {
-	display: inline-block;
-}
-
-.partner {
-	display: inline-block;
-}
-
-.parentsLink {
-	display: inline-block;
-	vertical-align: top;
-	margin: 110px -40px 0px;
-	width: 80px;
-}
-
-.parentsChildrenLink {
+.addPersonBtn {
 	position: absolute;
-	display: inline-block;
-	margin-top: 110px;
-	margin-left: -1px;
-	height: 180px;
-}
-
-.link {
-	border: #3b3b3b solid 2px;
-}
-
-.personCard{
-	display: inline-block;
-	margin: 0px 40px;
-	font-family: arial, verdana, tahoma;
-	font-size: 11px;
-	
-	transition: all 0.5s;
-	-webkit-transition: all 0.5s;
-	-moz-transition: all 0.5s;
-}
-
-/*Time for some hover effects*/
-/*We will apply the hover effect the the lineage of the element also*/
-.personCard:hover, .personCard:hover+ul li div {
-	background: #c8e4f8; 
-    color: #000;
-}
-
-/*Connector styles on hover*/
-.personCard:hover+ul li::after, 
-.personCard:hover+ul li::before, 
-.personCard:hover+ul::before, 
-.personCard:hover+ul ul::before{
-	border-color:  #94a0b4;
+	right: 60px;
+	bottom: 60px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	width: 80px;
+	height: 80px;
+	font-family: 'Times New Roman';
+	font-weight: bold;
+	font-size: 3rem;
+	border-radius: 40px;
 }
