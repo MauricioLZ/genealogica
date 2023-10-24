@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './Home.css';
 import FamilyTree from './Tree';
-import { Button, Card } from 'reactstrap';
+import { Button, Card, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { login } from './FacebookLogin';
 import { PersonForm } from './PersonForm';
 import { PersonData } from '../data/PersonData';
@@ -20,8 +20,7 @@ export class Home extends Component
             formOpen: false
         };
 
-        this.showPersonForm = this.showPersonForm.bind(this);
-        this.hidePersonForm = this.hidePersonForm.bind(this);
+        this.togglePersonForm = this.togglePersonForm.bind(this);
         this.registerPerson = this.registerPerson.bind(this);
     }
 
@@ -30,15 +29,10 @@ export class Home extends Component
         this.populatePeopleData();
         this.setState({ loading: false, loggedIn: true });
     }
-
-    showPersonForm()
+    
+    togglePersonForm()
     {
-        this.setState({ formOpen: true });
-    }
-
-    hidePersonForm() 
-    {
-        this.setState({ formOpen: false });
+        this.setState({ formOpen: !this.state.formOpen });
     }
 
     renderPeople(people) 
@@ -65,7 +59,7 @@ export class Home extends Component
                     { id: people[0].id, pids: people[0].pid, name: people[0].name, gender: people[0].gender, img: people[0].img, birth: people[0].birth, death: people[0].death },
                     ...people]}
                 />
-                <Button className='addPersonBtn' color='primary' onClick={this.showPersonForm}>+</Button>
+                <Button className='addBtn' color='primary' onClick={this.togglePersonForm}>+</Button>
             </div>;
         }
 
@@ -97,12 +91,17 @@ export class Home extends Component
             contents = this.renderPeople(this.state.people);
         }
 
+        const closeBtn = <Button onClick={this.togglePersonForm} outline>X</Button>;
+
         return (
             <div>
                 {contents}
-                { this.state.formOpen && 
-                    <PersonForm hideForm={this.hidePersonForm} relationOptions={this.state.people} registerPerson={this.registerPerson}></PersonForm>
-                }
+                <Modal isOpen={this.state.formOpen} toggle={this.togglePersonForm} centered={true} backdrop={true}>
+                    <ModalHeader close={closeBtn}>Add person</ModalHeader>
+                    <ModalBody>
+                        <PersonForm toggleForm={this.togglePersonForm} relationOptions={this.state.people} registerPerson={this.registerPerson}></PersonForm>
+                    </ModalBody>
+                </Modal>
             </div>
         );
     }

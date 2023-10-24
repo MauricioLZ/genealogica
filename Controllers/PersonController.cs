@@ -100,31 +100,4 @@ public class PersonController : ControllerBase
             }
         }
     }
-
-    // [HttpPatch]
-    // public bool Patch(Person person) 
-    // {
-    //     Database db = new Database();
-    //     SqlConnection? connection;
-
-    //     using (connection = db.Connect()) 
-    //     {
-    //         string sql = "UPDATE People SET (Name=@name, Gender=@gender, Img=@img, Birth=@birth, Death=@death, Mid=@mid, Fid=@fid, Pid=@pid) WHERE Id=@id";
-
-    //         using (SqlCommand command = new SqlCommand(sql, connection))
-    //         {
-    //             command.Parameters.AddWithValue("@name", person.Name);
-    //             command.Parameters.AddWithValue("@gender", person.Gender);
-    //             command.Parameters.AddWithValue("@img", person.Img);
-    //             command.Parameters.Add("@birth", SqlDbType.DateTime2).Value = person.Birth;
-    //             command.Parameters.Add("@death", SqlDbType.DateTime2).Value = person.Death;
-    //             command.Parameters.AddWithValue("@mid", person.Mid);
-    //             command.Parameters.AddWithValue("@fid", person.Fid);
-    //             command.Parameters.AddWithValue("@pid", person.Pid);
-    //             command.CommandType = CommandType.Text;
-    //             command.ExecuteNonQuery();
-    //             return true;
-    //         }
-    //     }
-    // }
 }
