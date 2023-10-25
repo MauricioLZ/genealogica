@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './Home.css';
 import FamilyTree from './Tree';
-import { Button, Card, Modal, ModalBody, ModalHeader } from 'reactstrap';
+import { Button, Card, Modal, ModalBody, ModalHeader, Popover, PopoverBody, PopoverHeader } from 'reactstrap';
 import { login } from './FacebookLogin';
 import { PersonForm } from './PersonForm';
 import { PersonData } from '../data/PersonData';
@@ -17,10 +17,12 @@ export class Home extends Component
             people: [], 
             loading: true, 
             loggedIn: false,
-            formOpen: false
+            formOpen: false,
+            popoverOpen: false
         };
 
         this.togglePersonForm = this.togglePersonForm.bind(this);
+        this.togglePopover = this.togglePopover.bind(this);
         this.registerPerson = this.registerPerson.bind(this);
     }
 
@@ -34,6 +36,11 @@ export class Home extends Component
     {
         this.setState({ formOpen: !this.state.formOpen });
     }
+    
+    togglePopover()
+    {
+        this.setState({ popoverOpen: !this.state.popoverOpen });
+    }
 
     renderPeople(people) 
     {
@@ -45,7 +52,7 @@ export class Home extends Component
         let content;
         if (people.length === 0)
         { 
-            content = <Card className='firstPerson' onClick={this.showPersonForm}> 
+            content = <Card className='firstPerson' onClick={this.togglePersonForm}> 
                 <div>
                     <h3 className='firstPersonTitle'>Create Person</h3>
                     <h6 className='firstPersonSubtitle'>Create your tree by adding the family members</h6>
@@ -59,7 +66,13 @@ export class Home extends Component
                     { id: people[0].id, pids: people[0].pid, name: people[0].name, gender: people[0].gender, img: people[0].img, birth: people[0].birth, death: people[0].death },
                     ...people]}
                 />
-                <Button className='addBtn' color='primary' onClick={this.togglePersonForm}>+</Button>
+                <Button id='addBtn' className='addBtn' color='primary' type='button'>+</Button>
+                <Popover isOpen={this.state.popoverOpen} placement='left' target="addBtn" toggle={this.togglePopover}>
+                    <PopoverBody>
+                        <Button className='newPersonBtn' color='primary' outline type='button' onClick={() => {this.togglePersonForm(); this.togglePopover();}}>New person</Button>
+                        <Button className='linkPersonBtn' color='primary' outline type='button' onClick={() => {this.togglePopover();}}>Link person</Button>
+                    </PopoverBody>
+                </Popover>
             </div>;
         }
 
@@ -129,14 +142,16 @@ export class Home extends Component
 
         const id = await PersonData.addPerson(person);
         
-        let partner = this.state.people.find(p => p.id == person.pid);
-        console.log(this.state.people);
-        console.log(person.pid);
-        if (partner !== null) 
+        if (person.pid !== 0) 
         {
-            partner.id = person.pid;
-            partner.pid = id;
-            await PersonData.updatePerson(partner);
+            let partner = this.state.people.find(p => p.id == person.pid);
+    
+            if (partner !== null) 
+            {
+                partner.id = person.pid;
+                partner.pid = id;
+                await PersonData.updatePerson(partner);
+            }
         }
 
         this.setState({ formOpen: false });

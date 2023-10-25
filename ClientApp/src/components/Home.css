@@ -59,3 +59,12 @@
 	font-size: 3rem;
 	border-radius: 40px;
 }
+
+.newPersonBtn {
+	display: block;
+	margin-bottom: 15px;
+}
+
+.linkPersonBtn {
+	display: block;
+}
