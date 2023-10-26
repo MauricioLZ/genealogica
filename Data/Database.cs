@@ -2,15 +2,14 @@ using Microsoft.Data.SqlClient;
 
 public class Database
 {
-    //private const string ConnectionString = "Data Source=DESKTOP-76J9BA3;Initial Catalog=GenealogicaDB;Integrated Security=True;TrustServerCertificate=True";
-    private const string ConnectionString = "Server=tcp:genealogica.database.windows.net,1433;Initial Catalog=GenealogicaDB;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=\"Active Directory Default\";";
-
-    public SqlConnection? Connect()
+    public async Task<SqlConnection?> Connect()
     {
+        string? connectionString = Env.azureConnectionString;
+
         try 
         {
-            SqlConnection connection = new SqlConnection(ConnectionString);
-            connection.Open();
+            SqlConnection connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
             return connection;
         }
         catch (SqlException e)

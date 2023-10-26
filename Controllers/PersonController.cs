@@ -10,12 +10,12 @@ namespace genealogica.Controllers;
 public class PersonController : ControllerBase
 {
     [HttpGet]
-    public IEnumerable<Person> Get()
+    public async Task<IEnumerable<Person>> Get()
     {
         Database db = new Database();
         SqlConnection? connection;
 
-        using (connection = db.Connect()) 
+        using (connection = await db.Connect()) 
         {
             string sql = "SELECT * FROM People";
 
@@ -47,12 +47,12 @@ public class PersonController : ControllerBase
     }
 
     [HttpPost]
-    public int Post(Person person)
+    public async Task<int> Post(Person person)
     {
         Database db = new Database();
         SqlConnection? connection;
 
-        using (connection = db.Connect()) 
+        using (connection = await db.Connect()) 
         {
             string sql = "INSERT INTO People (Name, Gender, Img, Birth, Death, Mid, Fid, Pid) OUTPUT INSERTED.Id VALUES (@name, @gender, @img, @birth, @death, @mid, @fid, @pid) ";
 
@@ -74,12 +74,12 @@ public class PersonController : ControllerBase
     }
 
     [HttpPut]
-    public bool Put(Person person) 
+    public async Task<bool> Put(Person person) 
     {
         Database db = new Database();
         SqlConnection? connection;
 
-        using (connection = db.Connect()) 
+        using (connection = await db.Connect()) 
         {
             string sql = "UPDATE People SET Name=@name, Gender=@gender, Img=@img, Birth=@birth, Death=@death, Mid=@mid, Fid=@fid, Pid=@pid WHERE Id=@id";
 

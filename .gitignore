@@ -233,3 +233,6 @@ _Pvt_Extensions
 
 
 *.env
+ClientApp/.env
+ClientApp/.env.development
+Env.cs

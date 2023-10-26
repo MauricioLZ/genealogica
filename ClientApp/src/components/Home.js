@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './Home.css';
 import FamilyTree from './Tree';
-import { Button, Card, Modal, ModalBody, ModalHeader, Popover, PopoverBody, PopoverHeader } from 'reactstrap';
+import { Button, Card, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { login } from './FacebookLogin';
 import { PersonForm } from './PersonForm';
 import { PersonData } from '../data/PersonData';
@@ -18,18 +18,28 @@ export class Home extends Component
             loading: true, 
             loggedIn: false,
             formOpen: false,
-            popoverOpen: false
+            popoverOpen: false,
+            selectedPersonId: 0
         };
 
+        this.modalFormRef = React.createRef();
         this.togglePersonForm = this.togglePersonForm.bind(this);
         this.togglePopover = this.togglePopover.bind(this);
         this.registerPerson = this.registerPerson.bind(this);
+        this.setPersonToForm = this.setPersonToForm.bind(this);
+        this.updatePerson = this.updatePerson.bind(this);
     }
 
     componentDidMount() 
     {
         this.populatePeopleData();
         this.setState({ loading: false, loggedIn: true });
+    }
+
+    setPersonToForm(id) 
+    {
+        console.log(id);
+        this.setState({ selectedPersonId: id })
     }
     
     togglePersonForm()
@@ -47,6 +57,10 @@ export class Home extends Component
         people.forEach(person => {
             person.birth = person.birth.split('T')[0];
             person.death = person.death.split('T')[0];
+            person.mid = (person.mid == 0) ? null : person.mid;
+            person.fid = (person.fid == 0) ? null : person.fid;
+            person.pid = (person.pid == 0) ? null : person.pid;
+            person.pids = (person.pid == 0) ? null : person.pids;
         });
 
         let content;
@@ -62,17 +76,8 @@ export class Home extends Component
         else
         {
             content = <div>
-                <FamilyTree nodes={[
-                    { id: people[0].id, pids: people[0].pid, name: people[0].name, gender: people[0].gender, img: people[0].img, birth: people[0].birth, death: people[0].death },
-                    ...people]}
-                />
-                <Button id='addBtn' className='addBtn' color='primary' type='button'>+</Button>
-                <Popover isOpen={this.state.popoverOpen} placement='left' target="addBtn" toggle={this.togglePopover}>
-                    <PopoverBody>
-                        <Button className='newPersonBtn' color='primary' outline type='button' onClick={() => {this.togglePersonForm(); this.togglePopover();}}>New person</Button>
-                        <Button className='linkPersonBtn' color='primary' outline type='button' onClick={() => {this.togglePopover();}}>Link person</Button>
-                    </PopoverBody>
-                </Popover>
+                <FamilyTree modalFormRef={this.modalFormRef} toggleForm={this.togglePersonForm} setPersonToForm={this.setPersonToForm} nodes={people}/>
+                <Button id='addBtn' className='addBtn' color='primary' type='button' onClick={() => { this.setPersonToForm(0); this.togglePersonForm();}}>+</Button>
             </div>;
         }
 
@@ -105,14 +110,20 @@ export class Home extends Component
         }
 
         const closeBtn = <Button onClick={this.togglePersonForm} outline>X</Button>;
+        const selectedPerson = (this.state.selectedPersonId == 0) ? null : this.state.people.find(p => p.id == this.state.selectedPersonId);
 
         return (
             <div>
                 {contents}
-                <Modal isOpen={this.state.formOpen} toggle={this.togglePersonForm} centered={true} backdrop={true}>
+                <Modal ref={this.modalFormRef} isOpen={this.state.formOpen} toggle={this.togglePersonForm} centered={true} backdrop={true}>
                     <ModalHeader close={closeBtn}>Add person</ModalHeader>
                     <ModalBody>
-                        <PersonForm toggleForm={this.togglePersonForm} relationOptions={this.state.people} registerPerson={this.registerPerson}></PersonForm>
+                        <PersonForm toggleForm={this.togglePersonForm} 
+                            relationOptions={this.state.people} 
+                            registerPerson={this.registerPerson}
+                            updatePerson={this.updatePerson} 
+                            selectedPerson={selectedPerson}>
+                        </PersonForm>
                     </ModalBody>
                 </Modal>
             </div>
@@ -141,19 +152,53 @@ export class Home extends Component
         };
 
         const id = await PersonData.addPerson(person);
-        
-        if (person.pid !== 0) 
+        person.id = id;
+
+        if (person.pid != undefined && person.pid > 0) 
         {
-            let partner = this.state.people.find(p => p.id == person.pid);
-    
-            if (partner !== null) 
-            {
-                partner.id = person.pid;
-                partner.pid = id;
-                await PersonData.updatePerson(partner);
-            }
+            await this.updatePartner(person);
         }
 
         this.setState({ formOpen: false });
+    }
+
+    async updatePerson(event)
+    {
+        event.preventDefault();
+
+        const person = {
+            name: event.target['name'].value,
+            gender: event.target['gender'].value,
+            img: event.target['treePhoto'].value,
+            birth: event.target['birth'].value,
+            death: event.target['death'].value,
+            mid: event.target['mother'].value,
+            fid: event.target['father'].value,
+            pid: event.target['partner'].value
+        };
+
+        person.id = this.state.selectedPersonId;
+        await PersonData.updatePerson(person);
+        
+        if (person.pid != undefined && person.pid > 0) 
+        {
+            await this.updatePartner(person);
+        }
+
+        this.setState({ formOpen: false });
+    }
+
+    async updatePartner(person) 
+    {
+        let partner = this.state.people.find(p => p.id == person.pid);
+        partner.mid = (partner.mid == null) ? 0 : partner.mid;
+        partner.fid = (partner.fid == null) ? 0 : partner.fid;
+
+        if (partner !== null) 
+        {
+            partner.pid = person.id;
+            partner.pids[0] = person.id;
+            await PersonData.updatePerson(partner);
+        }
     }
 }
