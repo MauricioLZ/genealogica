@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Collapse, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink, Button } from 'reactstrap';
+import { Collapse, Navbar, NavbarBrand, NavbarToggler, NavItem, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { login } from './FacebookLogin'
 import './NavMenu.css';
 
 export class NavMenu extends Component {
@@ -31,7 +30,7 @@ export class NavMenu extends Component {
           <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!this.state.collapsed} navbar>
             <ul className="navbar-nav flex-grow">
               <NavItem>
-                <Button onClick={login}>Login</Button>
+                <Button onClick={this.props.triggerLogin}>Login</Button>
               </NavItem>
             </ul>
           </Collapse>

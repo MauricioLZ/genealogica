@@ -28,7 +28,7 @@ export function initFacebookSdk() {
     });
 }
 
-export async function login() {
+export async function loginWithFb() {
     // login with facebook then authenticate with the API to get a JWT auth token
     const { authResponse } = await new Promise(window.FB.login);
     if (!authResponse) return;

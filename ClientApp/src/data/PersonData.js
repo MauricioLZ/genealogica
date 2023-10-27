@@ -7,17 +7,6 @@ export class PersonData extends Component
         const response = await fetch('person', { method: 'GET'});
         const data = await response.json();
         return data;
-
-        // await window.FB.api('/me?fields=picture', response => 
-        // {    
-        //     let peopleAlt = this.state.people;
-            
-        //     for (let i = 0; i < peopleAlt.length; i++) 
-        //     {
-        //         peopleAlt[i].photoLink = response.picture.data.url;
-        //     }
-        //     this.setState({ people: peopleAlt });
-        // });
     }
 
     static async addPerson(person)

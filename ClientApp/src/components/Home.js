@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import './Home.css';
 import FamilyTree from './Tree';
 import { Button, Card, Modal, ModalBody, ModalHeader } from 'reactstrap';
-import { login } from './FacebookLogin';
+import { loginWithFb } from './FacebookLogin';
 import { PersonForm } from './PersonForm';
 import { PersonData } from '../data/PersonData';
+import { LoginModal } from './LoginModal';
 
 export class Home extends Component 
 {
@@ -18,13 +19,13 @@ export class Home extends Component
             loading: true, 
             loggedIn: false,
             formOpen: false,
-            popoverOpen: false,
+            loginOpen: false,
             selectedPersonId: 0
         };
 
         this.modalFormRef = React.createRef();
+        this.toggleLoginModal = this.toggleLoginModal.bind(this);
         this.togglePersonForm = this.togglePersonForm.bind(this);
-        this.togglePopover = this.togglePopover.bind(this);
         this.registerPerson = this.registerPerson.bind(this);
         this.setPersonToForm = this.setPersonToForm.bind(this);
         this.updatePerson = this.updatePerson.bind(this);
@@ -33,23 +34,21 @@ export class Home extends Component
     componentDidMount() 
     {
         this.populatePeopleData();
-        this.setState({ loading: false, loggedIn: true });
     }
 
     setPersonToForm(id) 
     {
-        console.log(id);
         this.setState({ selectedPersonId: id })
+    }
+
+    toggleLoginModal() 
+    {
+        this.setState({ loginOpen: !this.state.loginOpen });
     }
     
     togglePersonForm()
     {
         this.setState({ formOpen: !this.state.formOpen });
-    }
-    
-    togglePopover()
-    {
-        this.setState({ popoverOpen: !this.state.popoverOpen });
     }
 
     renderPeople(people) 
@@ -86,7 +85,7 @@ export class Home extends Component
 
     renderLogInPrompt() 
     {
-        return <div className='loginMsg' onClick={login}>
+        return <div className='loginMsg' onClick={this.toggleLoginModal}>
             <h1>LOG IN</h1>
             <h3>to get started</h3>
         </div>;
@@ -94,29 +93,31 @@ export class Home extends Component
 
     render() 
     {
-        let contents;
-        
-        if (this.state.loading) 
+        if (this.props.loginTriggered) 
         {
-            <p><em>Loading...</em></p>
-        }
-        else if (!this.state.loggedIn) 
-        {
-            contents = this.renderLogInPrompt();
-        }
-        else 
-        {
-            contents = this.renderPeople(this.state.people);
+            this.toggleLoginModal();
+            this.props.untriggerLogin();
         }
 
-        const closeBtn = <Button onClick={this.togglePersonForm} outline>X</Button>;
+        let contents;
+        
+        if (this.state.loading) contents = <p><em>Loading...</em></p>;
+        else if (!this.state.loggedIn) contents = this.renderLogInPrompt();
+        else contents = this.renderPeople(this.state.people);
+
+        const personCloseBtn = <Button onClick={this.togglePersonForm} outline>X</Button>;
+        const loginCloseBtn = <Button onClick={this.toggleLoginModal} outline>X</Button>;
         const selectedPerson = (this.state.selectedPersonId == 0) ? null : this.state.people.find(p => p.id == this.state.selectedPersonId);
+        const modalFormTitle = (this.state.selectedPersonId == 0) ? 'Add person' : 'Edit person';
 
         return (
             <div>
                 {contents}
+                <LoginModal isOpen={this.state.loginOpen} toggle={this.toggleLoginModal} centered={true} backdrop={true} closeBtn={loginCloseBtn}></LoginModal>
                 <Modal ref={this.modalFormRef} isOpen={this.state.formOpen} toggle={this.togglePersonForm} centered={true} backdrop={true}>
-                    <ModalHeader close={closeBtn}>Add person</ModalHeader>
+                    <ModalHeader close={personCloseBtn}>
+                        {modalFormTitle}
+                    </ModalHeader>
                     <ModalBody>
                         <PersonForm toggleForm={this.togglePersonForm} 
                             relationOptions={this.state.people} 
