@@ -8,8 +8,8 @@ public class AppDbContext : DbContext
         
     }
 
-    public DbSet<User>? Users { get; set; }
-    public DbSet<Person>? People { get; set; }
-    public DbSet<TreePerson>? TreePeople { get; set; }
-    public DbSet<Tree>? Trees { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<Person> People { get; set; }
+    public DbSet<TreePerson> TreePeople { get; set; }
+    public DbSet<Tree> Trees { get; set; }
 }

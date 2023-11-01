@@ -33,7 +33,7 @@ export class Home extends Component
 
     componentDidMount() 
     {
-        this.populatePeopleData();
+        this.autoLogin();
     }
 
     setPersonToForm(id) 
@@ -43,7 +43,12 @@ export class Home extends Component
 
     toggleLoginModal() 
     {
-        this.setState({ loginOpen: !this.state.loginOpen });
+        this.setState({ loginOpen: (this.props.loginTriggered) ? false : !this.state.loginOpen });
+
+        if (this.props.loginTriggered) 
+        {    
+            this.props.untriggerLogin();
+        }
     }
     
     togglePersonForm()
@@ -93,12 +98,6 @@ export class Home extends Component
 
     render() 
     {
-        if (this.props.loginTriggered) 
-        {
-            this.toggleLoginModal();
-            this.props.untriggerLogin();
-        }
-
         let contents;
         
         if (this.state.loading) contents = <p><em>Loading...</em></p>;
@@ -113,7 +112,7 @@ export class Home extends Component
         return (
             <div>
                 {contents}
-                <LoginModal isOpen={this.state.loginOpen} toggle={this.toggleLoginModal} centered={true} backdrop={true} closeBtn={loginCloseBtn}></LoginModal>
+                <LoginModal isOpen={this.state.loginOpen || this.props.loginTriggered} toggle={this.toggleLoginModal} centered={true} backdrop={true} closeBtn={loginCloseBtn}></LoginModal>
                 <Modal ref={this.modalFormRef} isOpen={this.state.formOpen} toggle={this.togglePersonForm} centered={true} backdrop={true}>
                     <ModalHeader close={personCloseBtn}>
                         {modalFormTitle}
@@ -129,6 +128,17 @@ export class Home extends Component
                 </Modal>
             </div>
         );
+    }
+
+    async autoLogin() 
+    {
+        const logged = false;
+        this.setState({ loggedIn: logged, loading: false });
+
+        if (logged) 
+        {
+            this.populatePeopleData();
+        }
     }
 
     async populatePeopleData() 

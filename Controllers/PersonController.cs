@@ -40,6 +40,7 @@ public class PersonController : ControllerBase
                         people.Add(person);
                     }
 
+                    reader.Close();
                     return people.ToArray();
                 }
             }

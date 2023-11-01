@@ -10,7 +10,7 @@ export class LoginModal extends Component
         super(props);
         this.state = {
             user: undefined,
-            signUp: true,
+            signUp: false,
             error: ''
         };
 
@@ -76,13 +76,13 @@ export class LoginModal extends Component
                     <FormGroup check row>
                         <Row>
                             { this.state.signUp && 
-                                <Col sm={{ offset: 4, size: 4 }}> 
-                                    <a className='loginToggle' onClick={this.toggleLoginSignUp}>Log in</a> 
+                                <Col sm={{ offset: 0, size: 8 }}> 
+                                    <a className='loginToggle' onClick={this.toggleLoginSignUp}>Already registered? Log in</a> 
                                 </Col>
                             }
                             { !this.state.signUp && 
-                                <Col sm={{ offset: 4, size: 4 }}> 
-                                    <a className='loginToggle' onClick={this.toggleLoginSignUp}>Sign up</a> 
+                                <Col sm={{ offset: 0, size: 8 }}> 
+                                    <a className='loginToggle' onClick={this.toggleLoginSignUp}>Not registered? Sign up</a> 
                                 </Col>
                             }
                             <Col sm={{ size: 4 }}>
@@ -100,13 +100,14 @@ export class LoginModal extends Component
         if (userForm['password'].value === userForm['confirmPassword'].value) 
         {
             const user = {
-                email: userForm['email'].value,
-                password: userForm['password'].value
+                username: userForm['email'].value,
+                password: userForm['password'].value,
+                facebookId: ''
             };
 
             const id = await UserData.addUser(user);
             this.setState({ 
-                user: { id: id, email: user.email, password: '' }
+                user: { id: id, username: user.username, password: '' }
             });
             this.props.toggle();
         }
@@ -119,11 +120,11 @@ export class LoginModal extends Component
     async loginUser(userForm)
     {
         const user = {
-            email: userForm['email'].value,
+            username: userForm['email'].value,
             password: userForm['password'].value
         };
 
-        const dbUser = await UserData.getUser(user.email, user.password, 'Email');
+        const dbUser = await UserData.login(user.username, user.password, 'Email');
         this.setState({ 
             user: { ...dbUser, password: '' }
         });
