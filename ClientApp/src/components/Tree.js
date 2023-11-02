@@ -3,18 +3,21 @@ import FamilyTree from "@balkangraph/familytree.js";
 import TreeNodeView from './TreeNodeView'
 import './Tree.css'
 
-export default class Tree extends Component {
-
-    constructor(props) {
+export default class Tree extends Component 
+{
+    constructor(props) 
+    {
         super(props);
         this.divRef = React.createRef();
     }
 
-    shouldComponentUpdate() {
+    shouldComponentUpdate() 
+    {
         return false;
     }
 
-    componentDidMount() {
+    componentDidMount() 
+    {
         FamilyTree.templates.genealogica = Object.assign({}, FamilyTree.templates.tommy);
 
         let peopleOptions = [{ value: 0, text: 'Undefined' }];
@@ -75,7 +78,8 @@ export default class Tree extends Component {
         });
     }
 
-    render() {
+    render() 
+    {
         return (
             <div id="tree" ref={this.divRef}></div>
         );

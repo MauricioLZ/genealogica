@@ -3,10 +3,12 @@ import { Collapse, Navbar, NavbarBrand, NavbarToggler, NavItem, Button } from 'r
 import { Link } from 'react-router-dom';
 import './NavMenu.css';
 
-export class NavMenu extends Component {
+export class NavMenu extends Component 
+{
   static displayName = NavMenu.name;
 
-  constructor (props) {
+  constructor (props) 
+  {
     super(props);
 
     this.toggleNavbar = this.toggleNavbar.bind(this);
@@ -15,13 +17,15 @@ export class NavMenu extends Component {
     };
   }
 
-  toggleNavbar () {
+  toggleNavbar () 
+  {
     this.setState({
       collapsed: !this.state.collapsed
     });
   }
 
-  render() {
+  render() 
+  {
     return (
       <header>
         <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" container light>
@@ -30,7 +34,12 @@ export class NavMenu extends Component {
           <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!this.state.collapsed} navbar>
             <ul className="navbar-nav flex-grow">
               <NavItem>
-                <Button onClick={this.props.triggerLogin}>Login</Button>
+                { this.props.user.username === undefined &&
+                  <Button onClick={this.props.triggerLogin}>Login</Button> 
+                }
+                { this.props.user.username !== undefined &&
+                  <p className='username'>{this.props.user.username}</p>
+                }
               </NavItem>
             </ul>
           </Collapse>

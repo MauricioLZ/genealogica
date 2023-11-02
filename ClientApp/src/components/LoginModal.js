@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Form, FormGroup, Label, Col, Input, Button, Modal, ModalHeader, ModalBody, Row } from 'reactstrap';
 import './LoginModal.css'
 import { UserData } from '../data/UserData';
+import { validate } from 'react-email-validator'
+import Cookies from 'js-cookie'
 
 export class LoginModal extends Component 
 {
@@ -11,6 +13,7 @@ export class LoginModal extends Component
         this.state = {
             user: undefined,
             signUp: false,
+            success: '',
             error: ''
         };
 
@@ -21,12 +24,18 @@ export class LoginModal extends Component
 
     componentDidMount() 
     {
-        
+        this.setState({ 
+            signUp: false,
+            error: ''
+        });
     }
 
     toggleLoginSignUp() 
     {
-        this.setState({ signUp: !this.state.signUp });
+        this.setState({ 
+            signUp: !this.state.signUp,
+            error: ''
+        });
     }
 
     onSubmit(event) 
@@ -73,6 +82,12 @@ export class LoginModal extends Component
                             </Col>
                         </FormGroup>
                     }
+                    <FormGroup row>
+                        <Label className='success' sm={{ offset: 3, size: 9 }}>{this.state.success}</Label>
+                    </FormGroup>
+                    <FormGroup row>
+                        <Label className='error' sm={{ offset: 3, size: 9 }}>{this.state.error}</Label>
+                    </FormGroup>
                     <FormGroup check row>
                         <Row>
                             { this.state.signUp && 
@@ -97,7 +112,18 @@ export class LoginModal extends Component
 
     async registerUser(userForm)
     {
-        if (userForm['password'].value === userForm['confirmPassword'].value) 
+        const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+        const validEmail = regex.test(userForm['email'].value) && validate(userForm['email'].value);
+
+        if (!validEmail) 
+        {
+            this.setState({ error: "Invalid email" });
+        }
+        else if (userForm['password'].value.length < 6) 
+        {
+            this.setState({ error: "Password must be 6 or more characters" });
+        }
+        else if (userForm['password'].value === userForm['confirmPassword'].value) 
         {
             const user = {
                 username: userForm['email'].value,
@@ -106,10 +132,19 @@ export class LoginModal extends Component
             };
 
             const id = await UserData.addUser(user);
-            this.setState({ 
-                user: { id: id, username: user.username, password: '' }
-            });
-            this.props.toggle();
+            if (id > 0) 
+            {
+                this.setState({ 
+                    user: { id: id, username: user.username, password: '' }
+                });
+                
+                this.props.toggle();
+                //this.setState({ success: "A validation email has been sent to you" });
+            }
+            else 
+            {
+                this.setState({ error: "Email already registered" });
+            }
         }
         else 
         {
@@ -125,10 +160,25 @@ export class LoginModal extends Component
         };
 
         const dbUser = await UserData.login(user.username, user.password, 'Email');
-        this.setState({ 
-            user: { ...dbUser, password: '' }
-        });
 
-        this.props.toggle();
+        if (dbUser.id > 0) 
+        {
+            Cookies.set('userSession', dbUser.id, { expires: 30 });
+            this.props.setUser(dbUser);
+
+            this.setState({ 
+                user: { ...dbUser, password: '' }
+            });
+    
+            this.props.toggle();
+        }
+        else if (dbUser.id === 0) 
+        {
+            this.setState({ error: 'Email and password don\'t match' });
+        }
+        else 
+        {
+            this.setState({ error: 'Invalid email' });
+        }
     }
 }

@@ -27,14 +27,22 @@ public class UserController : ControllerBase
             
             string sql = "INSERT INTO Users (Username, Password, FacebookId) OUTPUT INSERTED.Id VALUES (@username, @password, @facebookId)";
 
-            using (SqlCommand command = new SqlCommand(sql, connection)) 
+            try 
             {
-                command.Parameters.AddWithValue("@username", user.Username);
-                command.Parameters.AddWithValue("@password", BCrypt.Net.BCrypt.HashPassword(user.Password));
-                command.Parameters.AddWithValue("@facebookId", user.FacebookId);
-                command.CommandType = CommandType.Text;
-                int id = (int)command.ExecuteScalar();
-                return id;
+                using (SqlCommand command = new SqlCommand(sql, connection)) 
+                {
+                    command.Parameters.AddWithValue("@username", user.Username);
+                    command.Parameters.AddWithValue("@password", BCrypt.Net.BCrypt.HashPassword(user.Password));
+                    command.Parameters.AddWithValue("@facebookId", user.FacebookId);
+                    command.CommandType = CommandType.Text;
+                    int id = (int)command.ExecuteScalar();
+                    return id;
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                return -1;
             }
         }
     }
@@ -44,6 +52,7 @@ public class UserController : ControllerBase
     public async Task<User> LoginUser(LoginObject loginObject)
     {
         User? user = null;
+        bool passwordless = false;
 
         if (loginObject.LoginType == "Email")
         {
@@ -52,18 +61,28 @@ public class UserController : ControllerBase
         else if (loginObject.LoginType == "Facebook")
         {
             user = await _dbContext.Users.SingleOrDefaultAsync(u => u.FacebookId == loginObject.Identifier);
+            passwordless = true;
+        }
+        else if (loginObject.LoginType == "Cookie") 
+        {
+            user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Id.ToString() == loginObject.Identifier);
+            passwordless = true;
         }
 
         if (user != null)
         {
             bool passwordMatch = BCrypt.Net.BCrypt.Verify(loginObject.Password, user.Password);
-            if (passwordMatch)
+            if (passwordless || passwordMatch)
             {
                 user.Password = "";
                 return user;
             }
+            else 
+            {
+                return new User { Id = 0 };
+            }
         }
 
-        return new User();
+        return new User { Id = -1 };
     }
 }

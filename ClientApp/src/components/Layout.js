@@ -13,7 +13,7 @@ export class Layout extends Component {
     render() {
 		return (
 			<div>
-			<NavMenu triggerLogin={this.props.triggerLogin} />
+			<NavMenu triggerLogin={this.props.triggerLogin} user={this.props.user} />
 			<Container tag="main" style={{maxWidth:"100%"}}>
 				{this.props.children}
 			</Container>

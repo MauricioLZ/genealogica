@@ -3,3 +3,11 @@
     color: blue;
     cursor: pointer;
 }
+
+.success {
+    color: green;
+}
+
+.error {
+    color: red;
+}

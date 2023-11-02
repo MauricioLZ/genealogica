@@ -16,14 +16,14 @@ export class Home extends Component
         super(props);
         this.state = { 
             people: [], 
-            loading: true, 
-            loggedIn: false,
+            loading: false,
             formOpen: false,
             loginOpen: false,
             selectedPersonId: 0
         };
 
         this.modalFormRef = React.createRef();
+        this.setUser = this.setUser.bind(this);
         this.toggleLoginModal = this.toggleLoginModal.bind(this);
         this.togglePersonForm = this.togglePersonForm.bind(this);
         this.registerPerson = this.registerPerson.bind(this);
@@ -33,7 +33,19 @@ export class Home extends Component
 
     componentDidMount() 
     {
-        this.autoLogin();
+        this.props.autoLogin().then(success => 
+        {
+            if (success) 
+            {
+                this.populatePeopleData()
+            }
+        });
+            
+    }
+
+    setUser(user) 
+    {
+        this.props.setUser(user);
     }
 
     setPersonToForm(id) 
@@ -100,8 +112,8 @@ export class Home extends Component
     {
         let contents;
         
-        if (this.state.loading) contents = <p><em>Loading...</em></p>;
-        else if (!this.state.loggedIn) contents = this.renderLogInPrompt();
+        if (this.props.loading || this.state.loading) contents = <p><em>Loading...</em></p>;
+        else if (!this.props.loggedIn) contents = this.renderLogInPrompt();
         else contents = this.renderPeople(this.state.people);
 
         const personCloseBtn = <Button onClick={this.togglePersonForm} outline>X</Button>;
@@ -112,7 +124,7 @@ export class Home extends Component
         return (
             <div>
                 {contents}
-                <LoginModal isOpen={this.state.loginOpen || this.props.loginTriggered} toggle={this.toggleLoginModal} centered={true} backdrop={true} closeBtn={loginCloseBtn}></LoginModal>
+                <LoginModal isOpen={this.state.loginOpen || this.props.loginTriggered} toggle={this.toggleLoginModal} centered={true} backdrop={true} closeBtn={loginCloseBtn} setUser={this.setUser}></LoginModal>
                 <Modal ref={this.modalFormRef} isOpen={this.state.formOpen} toggle={this.togglePersonForm} centered={true} backdrop={true}>
                     <ModalHeader close={personCloseBtn}>
                         {modalFormTitle}
@@ -130,19 +142,9 @@ export class Home extends Component
         );
     }
 
-    async autoLogin() 
-    {
-        const logged = false;
-        this.setState({ loggedIn: logged, loading: false });
-
-        if (logged) 
-        {
-            this.populatePeopleData();
-        }
-    }
-
     async populatePeopleData() 
     {
+        this.setState({ loading: true });
         const data = await PersonData.getFamily();
         this.setState({ people: data, loading: false });
     }
