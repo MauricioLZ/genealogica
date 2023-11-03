@@ -24,23 +24,15 @@ public class UserController : ControllerBase
         using (SqlConnection connection = new SqlConnection(Env.azureConnectionString)) 
         {
             await connection.OpenAsync();
-            
-            string sql = "INSERT INTO Users (Username, Password, FacebookId) OUTPUT INSERTED.Id VALUES (@username, @password, @facebookId)";
-
             try 
             {
-                // _dbContext.Users.Add(user);
-                // _dbContext.SaveChanges();
-                // return user.Id;
-                using (SqlCommand command = new SqlCommand(sql, connection)) 
-                {
-                    command.Parameters.AddWithValue("@username", user.Username);
-                    command.Parameters.AddWithValue("@password", BCrypt.Net.BCrypt.HashPassword(user.Password));
-                    command.Parameters.AddWithValue("@facebookId", user.FacebookId);
-                    command.CommandType = CommandType.Text;
-                    int id = (int)command.ExecuteScalar();
-                    return id;
-                }
+                int treeId = await new TreeController(_dbContext).Create(new Tree());
+                user.TreeId = treeId;
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
+                _dbContext.Users.Add(user);
+                _dbContext.SaveChanges();
+                return user.Id;
             }
             catch (Exception exception)
             {

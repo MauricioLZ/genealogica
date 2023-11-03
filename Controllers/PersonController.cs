@@ -2,6 +2,7 @@ using System.Data;
 using genealogica.DataModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace genealogica.Controllers;
 
@@ -9,67 +10,62 @@ namespace genealogica.Controllers;
 [Route("Person")]
 public class PersonController : ControllerBase
 {
-    [HttpGet]
-    public async Task<IEnumerable<Person>> Get()
+    private readonly AppDbContext _dbContext;
+
+    public PersonController(AppDbContext dbContext)
     {
-        Database db = new Database();
-        SqlConnection? connection;
+        _dbContext = dbContext;
+    }
 
-        using (connection = await db.Connect()) 
+    [HttpGet]
+    [Route("Family/{treeId}")]
+    public async Task<IEnumerable<Person>> Get(int treeId)
+    {
+        using (SqlConnection connection = new SqlConnection(Env.azureConnectionString)) 
         {
-            string sql = "SELECT * FROM People";
-
-            using (SqlCommand command = new SqlCommand(sql, connection))
+            await connection.OpenAsync();
+            try 
             {
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    List<Person> people = new List<Person>();
-                    while (reader.Read())
-                    {
-                        Person person = new Person{
-                            Id = (int)reader["Id"],
-                            Name = reader["Name"].ToString(),
-                            Gender = reader["Gender"].ToString(),
-                            Img = reader["Img"].ToString(),
-                            Birth = (DateTime)reader["Birth"],
-                            Death = (DateTime)reader["Death"],
-                            Pid = (int)reader["Pid"],
-                            Mid = (int)reader["Mid"],
-                            Fid = (int)reader["Fid"]
-                        };
-                        people.Add(person);
-                    }
-
-                    reader.Close();
-                    return people.ToArray();
-                }
+                List<TreePerson> treePeople = await _dbContext.TreePeople.Where(tp => tp.TreeId == treeId).ToListAsync();
+                List<int> peopleIds = treePeople.Select(t => t.PersonId).ToList();
+                List<Person> people = await _dbContext.People.Where(p => peopleIds.Contains(p.Id)).ToListAsync();
+                return people;
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                return new List<Person>();
             }
         }
     }
 
     [HttpPost]
-    public async Task<int> Post(Person person)
+    public async Task<int> Post(PersonRegisterObject personRegisterObject)
     {
-        Database db = new Database();
-        SqlConnection? connection;
+        Person person = personRegisterObject.Person;
+        int treeId = personRegisterObject.TreeId;
 
-        using (connection = await db.Connect()) 
+        using (SqlConnection connection = new SqlConnection(Env.azureConnectionString)) 
         {
-            string sql = "INSERT INTO People (Name, Gender, Img, Birth, Death, Mid, Fid, Pid) OUTPUT INSERTED.Id VALUES (@name, @gender, @img, @birth, @death, @mid, @fid, @pid) ";
-
-            using (SqlCommand command = new SqlCommand(sql, connection))
+            await connection.OpenAsync();
+            try 
             {
-                command.Parameters.AddWithValue("@name", person.Name);
-                command.Parameters.AddWithValue("@gender", person.Gender);
-                command.Parameters.AddWithValue("@img", person.Img);
-                command.Parameters.Add("@birth", SqlDbType.DateTime2).Value = person.Birth;
-                command.Parameters.Add("@death", SqlDbType.DateTime2).Value = person.Death;
-                command.Parameters.AddWithValue("@mid", person.Mid);
-                command.Parameters.AddWithValue("@fid", person.Fid);
-                command.Parameters.AddWithValue("@pid", person.Pid);
-                command.CommandType = CommandType.Text;
-                int id = (int)command.ExecuteScalar();
-                return id;
+                _dbContext.People.Add(person);
+                _dbContext.SaveChanges();
+
+                TreePerson treePerson = new TreePerson { 
+                    PersonId = person.Id, 
+                    TreeId = treeId 
+                };
+                _dbContext.TreePeople.Add(treePerson);
+                _dbContext.SaveChanges();
+
+                return person.Id;
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                return -1;
             }
         }
     }
@@ -77,27 +73,20 @@ public class PersonController : ControllerBase
     [HttpPut]
     public async Task<bool> Put(Person person) 
     {
-        Database db = new Database();
-        SqlConnection? connection;
-
-        using (connection = await db.Connect()) 
+        using (SqlConnection connection = new SqlConnection(Env.azureConnectionString)) 
         {
-            string sql = "UPDATE People SET Name=@name, Gender=@gender, Img=@img, Birth=@birth, Death=@death, Mid=@mid, Fid=@fid, Pid=@pid WHERE Id=@id";
-
-            using (SqlCommand command = new SqlCommand(sql, connection))
+            await connection.OpenAsync();
+            try 
             {
-                command.Parameters.AddWithValue("@id", person.Id);
-                command.Parameters.AddWithValue("@name", person.Name);
-                command.Parameters.AddWithValue("@gender", person.Gender);
-                command.Parameters.AddWithValue("@img", person.Img);
-                command.Parameters.Add("@birth", SqlDbType.DateTime2).Value = person.Birth;
-                command.Parameters.Add("@death", SqlDbType.DateTime2).Value = person.Death;
-                command.Parameters.AddWithValue("@mid", person.Mid);
-                command.Parameters.AddWithValue("@fid", person.Fid);
-                command.Parameters.AddWithValue("@pid", person.Pid);
-                command.CommandType = CommandType.Text;
-                command.ExecuteNonQuery();
+                _dbContext.People.Update(person);
+                _dbContext.SaveChanges();
+
                 return true;
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                return false;
             }
         }
     }

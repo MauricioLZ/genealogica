@@ -69,23 +69,22 @@ export default class App extends Component
 
     async autoLogin() 
     {
-		let success = false;
+		let dbUser = undefined;
 		const id = Cookies.get('userSession');
 
 		if (id > 0) 
 		{
-			const dbUser = await UserData.login(id, '', 'Cookie');
+			dbUser = await UserData.login(id, '', 'Cookie');
 	
 			if (dbUser) 
 			{
 				this.setUser(dbUser);
-				success = true;
 			}
 		}
 
 		this.setState({ loading: false });
 
-		return success;
+		return dbUser;
     }
 
 	logout() 

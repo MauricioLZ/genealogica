@@ -26,6 +26,8 @@ export class Home extends Component
         this.setUser = this.setUser.bind(this);
         this.toggleLoginModal = this.toggleLoginModal.bind(this);
         this.togglePersonForm = this.togglePersonForm.bind(this);
+        this.showPersonForm = this.showPersonForm.bind(this);
+        this.hidePersonForm = this.hidePersonForm.bind(this);
         this.registerPerson = this.registerPerson.bind(this);
         this.setPersonToForm = this.setPersonToForm.bind(this);
         this.updatePerson = this.updatePerson.bind(this);
@@ -34,11 +36,11 @@ export class Home extends Component
 
     componentDidMount() 
     {
-        this.props.autoLogin().then(success => 
+        this.props.autoLogin().then(dbUser => 
         {
-            if (success) 
+            if (dbUser) 
             {
-                this.populatePeopleData()
+                this.populatePeopleData(dbUser.treeId)
             }
         }); 
     }
@@ -67,20 +69,21 @@ export class Home extends Component
     {
         this.setState({ formOpen: !this.state.formOpen });
     }
+    
+    showPersonForm()
+    {
+        this.setState({ formOpen: true });
+    }
+    
+    hidePersonForm()
+    {
+        this.setState({ formOpen: false });
+    }
 
     renderPeople(people) 
     {
-        people.forEach(person => {
-            person.birth = person.birth.split('T')[0];
-            person.death = person.death.split('T')[0];
-            person.mid = (person.mid == 0) ? null : person.mid;
-            person.fid = (person.fid == 0) ? null : person.fid;
-            person.pid = (person.pid == 0) ? null : person.pid;
-            person.pids = (person.pid == 0) ? null : person.pids;
-        });
-
         let content;
-        if (people.length === 0)
+        if (!people || people.length === 0)
         { 
             content = <Card className='firstPerson' onClick={this.togglePersonForm}> 
                 <div>
@@ -91,9 +94,33 @@ export class Home extends Component
         }
         else
         {
+            people.forEach(person => {
+                person.birth = person.birth.split('T')[0];
+                person.death = person.death.split('T')[0];
+                person.mid = (person.mid == 0) ? null : person.mid;
+                person.fid = (person.fid == 0) ? null : person.fid;
+                person.pid = (person.pid == 0) ? null : person.pid;
+                person.pids = (person.pid == 0) ? null : person.pids;
+            });
+
             content = <div>
-                <FamilyTree modalFormRef={this.modalFormRef} toggleForm={this.togglePersonForm} setPersonToForm={this.setPersonToForm} nodes={people}/>
-                <Button id='addBtn' className='addBtn' color='primary' type='button' onClick={() => { this.setPersonToForm(0); this.togglePersonForm();}}>+</Button>
+                <FamilyTree 
+                    modalFormRef={this.modalFormRef}
+                    showForm={this.showPersonForm}
+                    hideForm={this.hidePersonForm} 
+                    setPersonToForm={this.setPersonToForm} 
+                    nodes={people}/>
+                <Button 
+                    id='addBtn' 
+                    className='addBtn' 
+                    color='primary' 
+                    type='button' 
+                    onClick={() => { 
+                        this.setPersonToForm(0); 
+                        this.togglePersonForm();
+                    }}>
+                        +
+                    </Button>
             </div>;
         }
 
@@ -149,16 +176,17 @@ export class Home extends Component
         );
     }
 
-    async populatePeopleData() 
+    async populatePeopleData(treeId) 
     {
         this.setState({ loading: true });
-        const data = await PersonData.getFamily();
+        const data = await PersonData.getFamily(treeId);
         this.setState({ people: data, loading: false });
     }
 
     async registerPerson(event)
     {
         event.preventDefault();
+        this.setState({ loading: true })
 
         const person = {
             name: event.target['name'].value,
@@ -168,23 +196,42 @@ export class Home extends Component
             death: event.target['death'].value,
             mid: event.target['mother'].value,
             fid: event.target['father'].value,
-            pid: event.target['partner'].value
+            pid: event.target['partner'].value,
+            pids: [event.target['partner'].value]
         };
 
-        const id = await PersonData.addPerson(person);
+        const id = await PersonData.addPerson(person, this.props.user.treeId);
         person.id = id;
+
+        let partner = undefined;
 
         if (person.pid != undefined && person.pid > 0) 
         {
-            await this.updatePartner(person);
+            partner = await this.updatePartner(person);
         }
 
-        this.setState({ formOpen: false });
+        let people = [];
+
+        for (let i = 0; i < this.state.people.length; i++) 
+        {
+            if (partner !== undefined && this.state.people[i].id === partner.id) 
+                people.push(partner);
+            else 
+                people.push(this.state.people[i]);
+        }
+
+        console.log(person);
+        this.setState({ 
+            formOpen: false,
+            people: [...people, person],
+            loading: false
+        });
     }
 
     async updatePerson(event)
     {
         event.preventDefault();
+        this.setState({ loading: true })
 
         const person = {
             name: event.target['name'].value,
@@ -199,13 +246,30 @@ export class Home extends Component
 
         person.id = this.state.selectedPersonId;
         await PersonData.updatePerson(person);
+        let partner = undefined;
         
         if (person.pid != undefined && person.pid > 0) 
         {
-            await this.updatePartner(person);
+            partner = await this.updatePartner(person);
         }
 
-        this.setState({ formOpen: false });
+        let people = [];
+
+        for (let i = 0; i < this.state.people.length; i++) 
+        {
+            if (this.state.people[i].id === person.id) 
+                people.push(person);
+            else if (partner !== undefined && this.state.people[i].id === partner.id) 
+                people.push(partner);
+            else 
+                people.push(this.state.people[i]);
+        }
+
+        this.setState({ 
+            people: people,
+            formOpen: false,
+            loading: false
+        });
     }
 
     async updatePartner(person) 
@@ -217,8 +281,9 @@ export class Home extends Component
         if (partner !== null) 
         {
             partner.pid = person.id;
-            partner.pids[0] = person.id;
+            partner.pids = [person.id];
             await PersonData.updatePerson(partner);
+            return partner;
         }
     }
 }

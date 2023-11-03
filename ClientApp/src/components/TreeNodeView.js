@@ -7,11 +7,9 @@ export default class TreeNodeView
     
     show = function (nodeId) 
     {
-        this.hide();
         this.nodeId = nodeId;
-    
         this.props.setPersonToForm(nodeId);
-        this.props.toggleForm();
+        this.props.showForm();
     
         // var node = this.family.get(nodeId);
         // this.nameInput.value = node.name;
@@ -20,6 +18,6 @@ export default class TreeNodeView
     
     hide = function (showldUpdateTheNode) 
     {
-        this.props.toggleForm();
+        this.props.hideForm();
     };
 }
