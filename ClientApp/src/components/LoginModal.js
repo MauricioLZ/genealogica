@@ -171,6 +171,7 @@ export class LoginModal extends Component
             });
     
             this.props.toggle();
+            this.props.populatePeopleData();
         }
         else if (dbUser.id === 0) 
         {

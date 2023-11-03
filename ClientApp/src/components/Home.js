@@ -29,6 +29,7 @@ export class Home extends Component
         this.registerPerson = this.registerPerson.bind(this);
         this.setPersonToForm = this.setPersonToForm.bind(this);
         this.updatePerson = this.updatePerson.bind(this);
+        this.populatePeopleData = this.populatePeopleData.bind(this);
     }
 
     componentDidMount() 
@@ -39,8 +40,7 @@ export class Home extends Component
             {
                 this.populatePeopleData()
             }
-        });
-            
+        }); 
     }
 
     setUser(user) 
@@ -124,7 +124,14 @@ export class Home extends Component
         return (
             <div>
                 {contents}
-                <LoginModal isOpen={this.state.loginOpen || this.props.loginTriggered} toggle={this.toggleLoginModal} centered={true} backdrop={true} closeBtn={loginCloseBtn} setUser={this.setUser}></LoginModal>
+                <LoginModal 
+                    isOpen={this.state.loginOpen || this.props.loginTriggered} 
+                    toggle={this.toggleLoginModal} 
+                    centered={true} 
+                    backdrop={true} 
+                    closeBtn={loginCloseBtn} 
+                    setUser={this.setUser}
+                    populatePeopleData={this.populatePeopleData}/>
                 <Modal ref={this.modalFormRef} isOpen={this.state.formOpen} toggle={this.togglePersonForm} centered={true} backdrop={true}>
                     <ModalHeader close={personCloseBtn}>
                         {modalFormTitle}

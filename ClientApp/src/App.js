@@ -24,6 +24,7 @@ export default class App extends Component
 		this.untriggerLogin = this.untriggerLogin.bind(this);
 		this.setUser = this.setUser.bind(this);
 		this.autoLogin = this.autoLogin.bind(this);
+		this.logout = this.logout.bind(this);
 	}
 
 	triggerLogin() 
@@ -46,7 +47,7 @@ export default class App extends Component
 
 	render() {
 		return (
-		<Layout triggerLogin={this.triggerLogin} user={this.state.user}>
+		<Layout triggerLogin={this.triggerLogin} user={this.state.user} logout={this.logout}>
 			<Routes>
 			{ AppRoutes.map((route, index) => {
 				const { element, ...rest } = route;
@@ -75,7 +76,6 @@ export default class App extends Component
 		{
 			const dbUser = await UserData.login(id, '', 'Cookie');
 	
-			console.log(dbUser);
 			if (dbUser) 
 			{
 				this.setUser(dbUser);
@@ -87,4 +87,13 @@ export default class App extends Component
 
 		return success;
     }
+
+	logout() 
+	{
+		Cookies.remove('userSession');
+		this.setState({ 
+			user: {},
+			loggedIn: false
+		})
+	}
 }

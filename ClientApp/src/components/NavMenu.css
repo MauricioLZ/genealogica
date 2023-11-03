@@ -19,4 +19,6 @@ html {
 
 .username {
   margin: auto;
+  cursor: pointer;
+  user-select: none;
 }

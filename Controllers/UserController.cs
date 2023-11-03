@@ -29,6 +29,9 @@ public class UserController : ControllerBase
 
             try 
             {
+                // _dbContext.Users.Add(user);
+                // _dbContext.SaveChanges();
+                // return user.Id;
                 using (SqlCommand command = new SqlCommand(sql, connection)) 
                 {
                     command.Parameters.AddWithValue("@username", user.Username);
