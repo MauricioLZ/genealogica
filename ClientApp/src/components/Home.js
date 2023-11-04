@@ -97,10 +97,10 @@ export class Home extends Component
             people.forEach(person => {
                 person.birth = person.birth.split('T')[0];
                 person.death = person.death.split('T')[0];
-                person.mid = (person.mid == 0) ? null : person.mid;
-                person.fid = (person.fid == 0) ? null : person.fid;
-                person.pid = (person.pid == 0) ? null : person.pid;
-                person.pids = (person.pid == 0) ? null : person.pids;
+                person.mid = (person.mid === 0) ? null : person.mid;
+                person.fid = (person.fid === 0) ? null : person.fid;
+                person.pid = (person.pid === 0) ? null : person.pid;
+                person.pids = (person.pid === 0) ? null : person.pids;
             });
 
             content = <div>
@@ -145,8 +145,8 @@ export class Home extends Component
 
         const personCloseBtn = <Button onClick={this.togglePersonForm} outline>X</Button>;
         const loginCloseBtn = <Button onClick={this.toggleLoginModal} outline>X</Button>;
-        const selectedPerson = (this.state.selectedPersonId == 0) ? null : this.state.people.find(p => p.id == this.state.selectedPersonId);
-        const modalFormTitle = (this.state.selectedPersonId == 0) ? 'Add person' : 'Edit person';
+        const selectedPerson = (this.state.selectedPersonId === 0) ? null : this.state.people.find(p => p.id == this.state.selectedPersonId);
+        const modalFormTitle = (this.state.selectedPersonId === 0) ? 'Add person' : 'Edit person';
 
         return (
             <div>
@@ -274,9 +274,9 @@ export class Home extends Component
 
     async updatePartner(person) 
     {
-        let partner = this.state.people.find(p => p.id == person.pid);
-        partner.mid = (partner.mid == null) ? 0 : partner.mid;
-        partner.fid = (partner.fid == null) ? 0 : partner.fid;
+        let partner = this.state.people.find(p => p.id === person.pid);
+        partner.mid = (partner.mid === null) ? 0 : partner.mid;
+        partner.fid = (partner.fid === null) ? 0 : partner.fid;
 
         if (partner !== null) 
         {

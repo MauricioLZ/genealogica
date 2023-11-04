@@ -92,12 +92,12 @@ export class LoginModal extends Component
                         <Row>
                             { this.state.signUp && 
                                 <Col sm={{ offset: 0, size: 8 }}> 
-                                    <a className='loginToggle' onClick={this.toggleLoginSignUp}>Already registered? Log in</a> 
+                                    <button className='loginToggle' onClick={this.toggleLoginSignUp}>Already registered? Log in</button> 
                                 </Col>
                             }
                             { !this.state.signUp && 
                                 <Col sm={{ offset: 0, size: 8 }}> 
-                                    <a className='loginToggle' onClick={this.toggleLoginSignUp}>Not registered? Sign up</a> 
+                                    <button className='loginToggle' onClick={this.toggleLoginSignUp}>Not registered? Sign up</button> 
                                 </Col>
                             }
                             <Col sm={{ size: 4 }}>

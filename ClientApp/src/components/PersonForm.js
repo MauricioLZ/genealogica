@@ -17,21 +17,21 @@ export class PersonForm extends Component
     componentDidMount() 
     {
         this.setState({ 
-            person: (this.props.selectedPerson == null) ? this.emptyPerson : this.props.selectedPerson
+            person: (this.props.selectedPerson === null) ? this.emptyPerson : this.props.selectedPerson
         });
     }
 
     changeValue(e) 
     {
         const target = e.target;
-        if (target.name == 'name') this.setState({ person: { ...this.state.person, name: target.value }});
-        else if (target.name == 'gender') this.setState({ person: { ...this.state.person, gender: target.value }});
-        else if (target.name == 'treePhoto') this.setState({ person: { ...this.state.person, img: target.value }});
-        else if (target.name == 'birth') this.setState({ person: { ...this.state.person, birth: target.value }});
-        else if (target.name == 'death') this.setState({ person: { ...this.state.person, death: target.value }});
-        else if (target.name == 'mother') this.setState({ person: { ...this.state.person, mid: parseInt(target.value) }});
-        else if (target.name == 'father') this.setState({ person: { ...this.state.person, fid: parseInt(target.value) }});
-        else if (target.name == 'partner') this.setState({ person: { ...this.state.person, pid: parseInt(target.value) }});
+        if (target.name === 'name') this.setState({ person: { ...this.state.person, name: target.value }});
+        else if (target.name === 'gender') this.setState({ person: { ...this.state.person, gender: target.value }});
+        else if (target.name === 'treePhoto') this.setState({ person: { ...this.state.person, img: target.value }});
+        else if (target.name === 'birth') this.setState({ person: { ...this.state.person, birth: target.value }});
+        else if (target.name === 'death') this.setState({ person: { ...this.state.person, death: target.value }});
+        else if (target.name === 'mother') this.setState({ person: { ...this.state.person, mid: parseInt(target.value) }});
+        else if (target.name === 'father') this.setState({ person: { ...this.state.person, fid: parseInt(target.value) }});
+        else if (target.name === 'partner') this.setState({ person: { ...this.state.person, pid: parseInt(target.value) }});
     }
 
     onSubmit(event) 
