@@ -21,7 +21,7 @@ public class PersonController : ControllerBase
     [Route("Family/{treeId}")]
     public async Task<IEnumerable<Person>> Get(int treeId)
     {
-        using (SqlConnection connection = new SqlConnection(Env.azureConnectionString)) 
+        using (SqlConnection connection = new SqlConnection(Settings.instance.ServerConnectionString)) 
         {
             await connection.OpenAsync();
             try 
@@ -45,7 +45,7 @@ public class PersonController : ControllerBase
         Person person = personRegisterObject.Person;
         int treeId = personRegisterObject.TreeId;
 
-        using (SqlConnection connection = new SqlConnection(Env.azureConnectionString)) 
+        using (SqlConnection connection = new SqlConnection(Settings.instance.ServerConnectionString)) 
         {
             await connection.OpenAsync();
             try 
@@ -73,7 +73,7 @@ public class PersonController : ControllerBase
     [HttpPut]
     public async Task<bool> Put(Person person) 
     {
-        using (SqlConnection connection = new SqlConnection(Env.azureConnectionString)) 
+        using (SqlConnection connection = new SqlConnection(Settings.instance.ServerConnectionString)) 
         {
             await connection.OpenAsync();
             try 

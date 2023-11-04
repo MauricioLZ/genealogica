@@ -21,7 +21,7 @@ public class UserController : ControllerBase
     [Route("Registration")]
     public async Task<int> RegisterUser(User user)
     {
-        using (SqlConnection connection = new SqlConnection(Env.azureConnectionString)) 
+        using (SqlConnection connection = new SqlConnection(Settings.instance.ServerConnectionString)) 
         {
             await connection.OpenAsync();
             try 

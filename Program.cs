@@ -1,24 +1,24 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Azure;
-using Microsoft.Extensions.Configuration;
-using System;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        var builder = WebApplication.CreateBuilder(args);
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
         
-        builder.Services.Configure<Env>(builder.Configuration.GetSection("genealogica:Env"));
 
         string appConfigConnectionString = builder.Configuration.GetConnectionString("AppConfig");
         builder.Configuration.AddAzureAppConfiguration(appConfigConnectionString);
-        
-        string serverConnectionString = builder.Configuration.GetConnectionString("azureConnectionString");
-        builder.Services.AddControllersWithViews();
-        builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(serverConnectionString));
 
-        var app = builder.Build();
+        Settings settings = new Settings
+        {
+            ServerConnectionString = builder.Configuration.GetConnectionString("azureConnectionString")
+        };
+        builder.Services.Configure<Settings>(builder.Configuration.GetSection("genealogica:Settings"));
+        builder.Services.AddControllersWithViews();
+        builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(settings.ServerConnectionString));
+
+        WebApplication app = builder.Build();
 
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())

@@ -20,7 +20,7 @@ public class TreeController : ControllerBase
     [HttpPost]
     public async Task<int> Create(Tree tree)
     {
-        using (SqlConnection connection = new SqlConnection(Env.azureConnectionString)) 
+        using (SqlConnection connection = new SqlConnection(Settings.instance.ServerConnectionString)) 
         {
             await connection.OpenAsync();
             try 
