@@ -19,14 +19,14 @@ public class UserController : ControllerBase
 
     [HttpPost]
     [Route("Registration")]
-    public async Task<int> RegisterUser(User user)
+    public int RegisterUser(User user)
     {
-        using (SqlConnection connection = new SqlConnection(Settings.instance.ServerConnectionString)) 
-        {
-            await connection.OpenAsync();
+        // using (SqlConnection connection = new SqlConnection(Settings.instance.ServerConnectionString)) 
+        // {
+        //     await connection.OpenAsync();
             try 
             {
-                int treeId = await new TreeController(_dbContext).Create(new Tree());
+                int treeId = new TreeController(_dbContext).Create(new Tree());
                 user.TreeId = treeId;
                 user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
@@ -39,7 +39,7 @@ public class UserController : ControllerBase
                 Console.WriteLine(exception);
                 return -1;
             }
-        }
+        //}
     }
 
     [HttpPost]

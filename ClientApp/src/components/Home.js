@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './Home.css';
 import FamilyTree from './Tree';
 import { Button, Card, Modal, ModalBody, ModalHeader } from 'reactstrap';
-import { loginWithFb } from './FacebookLogin';
+//import { loginWithFb } from './FacebookLogin';
 import { PersonForm } from './PersonForm';
 import { PersonData } from '../data/PersonData';
 import { LoginModal } from './LoginModal';
@@ -145,7 +145,7 @@ export class Home extends Component
 
         const personCloseBtn = <Button onClick={this.togglePersonForm} outline>X</Button>;
         const loginCloseBtn = <Button onClick={this.toggleLoginModal} outline>X</Button>;
-        const selectedPerson = (this.state.selectedPersonId === 0) ? null : this.state.people.find(p => p.id == this.state.selectedPersonId);
+        const selectedPerson = (this.state.selectedPersonId === 0) ? null : this.state.people.find(p => p.id === this.state.selectedPersonId);
         const modalFormTitle = (this.state.selectedPersonId === 0) ? 'Add person' : 'Edit person';
 
         return (
@@ -205,7 +205,7 @@ export class Home extends Component
 
         let partner = undefined;
 
-        if (person.pid != undefined && person.pid > 0) 
+        if (person.pid && person.pid > 0) 
         {
             partner = await this.updatePartner(person);
         }
@@ -214,7 +214,7 @@ export class Home extends Component
 
         for (let i = 0; i < this.state.people.length; i++) 
         {
-            if (partner !== undefined && this.state.people[i].id === partner.id) 
+            if (partner && this.state.people[i].id === partner.id) 
                 people.push(partner);
             else 
                 people.push(this.state.people[i]);
@@ -248,7 +248,7 @@ export class Home extends Component
         await PersonData.updatePerson(person);
         let partner = undefined;
         
-        if (person.pid != undefined && person.pid > 0) 
+        if (person.pid && person.pid > 0) 
         {
             partner = await this.updatePartner(person);
         }
@@ -259,7 +259,7 @@ export class Home extends Component
         {
             if (this.state.people[i].id === person.id) 
                 people.push(person);
-            else if (partner !== undefined && this.state.people[i].id === partner.id) 
+            else if (partner && this.state.people[i].id === partner.id) 
                 people.push(partner);
             else 
                 people.push(this.state.people[i]);
@@ -274,11 +274,14 @@ export class Home extends Component
 
     async updatePartner(person) 
     {
-        let partner = this.state.people.find(p => p.id === person.pid);
-        partner.mid = (partner.mid === null) ? 0 : partner.mid;
-        partner.fid = (partner.fid === null) ? 0 : partner.fid;
+        let partner = this.state.people.find(p => p.id.toString() === person.pid);
+        console.log(partner);
+        console.log(this.state.people[0].id);
+        console.log(person.pid);
+        partner.mid = (partner.mid) ? partner.mid : 0;
+        partner.fid = (partner.fid) ? partner.fid : 0;
 
-        if (partner !== null) 
+        if (partner !== undefined) 
         {
             partner.pid = person.id;
             partner.pids = [person.id];

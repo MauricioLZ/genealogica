@@ -1,8 +1,5 @@
-using System.Data;
 using genealogica.DataModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 
 namespace genealogica.Controllers;
 
@@ -18,22 +15,18 @@ public class TreeController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<int> Create(Tree tree)
+    public int Create(Tree tree)
     {
-        using (SqlConnection connection = new SqlConnection(Settings.instance.ServerConnectionString)) 
+        try 
         {
-            await connection.OpenAsync();
-            try 
-            {
-                _dbContext.Trees.Add(tree);
-                _dbContext.SaveChanges();
-                return tree.Id;
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine(exception);
-                return -1;
-            }
+            _dbContext.Trees.Add(tree);
+            _dbContext.SaveChanges();
+            return tree.Id;
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception);
+            return -1;
         }
     }
 }

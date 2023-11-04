@@ -5,18 +5,17 @@ internal class Program
     private static void Main(string[] args)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        
 
-        string appConfigConnectionString = builder.Configuration.GetConnectionString("AppConfig");
+        string? appConfigConnectionString = builder.Configuration.GetConnectionString("AppConfig");
         builder.Configuration.AddAzureAppConfiguration(appConfigConnectionString);
 
+        builder.Services.Configure<Settings>(builder.Configuration.GetSection("genealogica:Settings"));
         Settings settings = new Settings
         {
-            ServerConnectionString = builder.Configuration.GetConnectionString("azureConnectionString")
+            azureConnectionString = builder.Configuration.GetConnectionString("azureConnectionString")
         };
-        builder.Services.Configure<Settings>(builder.Configuration.GetSection("genealogica:Settings"));
         builder.Services.AddControllersWithViews();
-        builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(settings.ServerConnectionString));
+        builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(settings.azureConnectionString));
 
         WebApplication app = builder.Build();
 

@@ -38,7 +38,7 @@ export class PersonForm extends Component
     {
         event.preventDefault(); 
 
-        if (this.state.person.id != undefined && this.state.person.id > 0) 
+        if (this.state.person.id !== undefined && this.state.person.id > 0) 
         {
             this.props.updatePerson(event);
         }
