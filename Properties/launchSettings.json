@@ -7,7 +7,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
       },
-      "applicationUrl": "https://genealogica.azurewebsites.net"
+      "applicationUrl": "https://localhost:7259;http://localhost:5055"
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -22,7 +22,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "https://genealogica.azurewebsites.net",
+      "applicationUrl": "http://localhost:2342",
       "sslPort": 44335
     }
   }
