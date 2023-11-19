@@ -6,10 +6,6 @@ internal class Program
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-        // string? appConfigConnectionString = builder.Configuration.GetConnectionString("AppConfig");
-        // builder.Configuration.AddAzureAppConfiguration(appConfigConnectionString);
-
-        //builder.Services.Configure<Settings>(builder.Configuration.GetSection("genealogica:Settings"));
         Settings settings = new Settings
         {
             azureConnectionString = builder.Configuration.GetConnectionString("azureConnectionString")

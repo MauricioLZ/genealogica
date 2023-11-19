@@ -102,6 +102,7 @@ export class Home extends Component
                 person.pid = (person.pid === 0) ? null : person.pid;
                 person.pids = (person.pid === 0) ? null : person.pids;
             });
+            people.sort((p1, p2) => new Date(p1.birth) - new Date(p2.birth));
 
             content = <div>
                 <FamilyTree 
@@ -212,12 +213,15 @@ export class Home extends Component
 
         let people = [];
 
-        for (let i = 0; i < this.state.people.length; i++) 
+        if (this.state.people) 
         {
-            if (partner && this.state.people[i].id === partner.id) 
-                people.push(partner);
-            else 
-                people.push(this.state.people[i]);
+            for (let i = 0; i < this.state.people.length; i++) 
+            {
+                if (partner && this.state.people[i].id === partner.id) 
+                    people.push(partner);
+                else 
+                    people.push(this.state.people[i]);
+            }
         }
 
         console.log(person);

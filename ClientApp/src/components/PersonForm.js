@@ -50,6 +50,17 @@ export class PersonForm extends Component
 
     render()
     {
+        let relationOptionsOrdered = this.props.relationOptions;
+
+        if (relationOptionsOrdered) 
+        {
+            relationOptionsOrdered.sort((p1, p2) => {
+                if (p1.name.toLowerCase() < p2.name.toLowerCase()) return -1;
+                if (p1.name.toLowerCase() > p2.name.toLowerCase()) return 1;
+                else return 0;
+            });
+        }
+
         return <Form className='personForm' onSubmit={this.onSubmit}>
             <FormGroup row>
                 <Label for="name" sm={3}>Name</Label>
@@ -91,8 +102,8 @@ export class PersonForm extends Component
                 <Col sm={9}>
                     <Input id="mother" name="mother" type="select" value={this.state.person.mid} onChange={this.changeValue}>
                         <option value={0}>Undefined</option>
-                        { this.props.relationOptions.map(person => {
-                            const optionName = this.personOptionName(person, this.props.relationOptions);
+                        { relationOptionsOrdered && relationOptionsOrdered.map(person => {
+                            const optionName = this.personOptionName(person, relationOptionsOrdered);
                             return <option key={person.id} value={person.id}>{optionName}</option>
                         })}
                     </Input>
@@ -103,8 +114,8 @@ export class PersonForm extends Component
                 <Col sm={9}>
                     <Input id="father" name="father" type="select" value={this.state.person.fid} onChange={this.changeValue}>
                         <option value={0}>Undefined</option>
-                        { this.props.relationOptions.map(person => {
-                            const optionName = this.personOptionName(person, this.props.relationOptions);
+                        { relationOptionsOrdered && relationOptionsOrdered.map(person => {
+                            const optionName = this.personOptionName(person, relationOptionsOrdered);
                             return <option key={person.id} value={person.id}>{optionName}</option>
                         })}
                     </Input>
@@ -115,8 +126,8 @@ export class PersonForm extends Component
                 <Col sm={9}>
                     <Input id="partner" name="partner" type="select" value={this.state.person.pid} onChange={this.changeValue}>
                         <option value={0}>Undefined</option>
-                        { this.props.relationOptions.map(person => {
-                            const optionName = this.personOptionName(person, this.props.relationOptions);
+                        { relationOptionsOrdered && relationOptionsOrdered.map(person => {
+                            const optionName = this.personOptionName(person, relationOptionsOrdered);
                             return <option key={person.id} value={person.id}>{optionName}</option>
                         })}
                     </Input>

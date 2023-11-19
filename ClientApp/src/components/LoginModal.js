@@ -134,11 +134,7 @@ export class LoginModal extends Component
             const id = await UserData.addUser(user);
             if (id > 0) 
             {
-                this.setState({ 
-                    user: { id: id, username: user.username, password: '' }
-                });
-                
-                this.props.toggle();
+                this.loginUser(userForm);
                 //this.setState({ success: "A validation email has been sent to you" });
             }
             else 
@@ -171,7 +167,7 @@ export class LoginModal extends Component
             });
     
             this.props.toggle();
-            this.props.populatePeopleData();
+            this.props.populatePeopleData(dbUser.treeId);
         }
         else if (dbUser.id === 0) 
         {
