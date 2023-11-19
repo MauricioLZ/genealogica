@@ -44,6 +44,15 @@ export class PersonData extends Component
             }
         });
 
-        console.log(response);
+        return response;
+    }
+
+    static async deletePerson(personId) 
+    {
+        const response = await fetch('person/' + personId, { 
+            method: 'DELETE'
+        });
+
+        return response;
     }
 }

@@ -31,6 +31,7 @@ export class Home extends Component
         this.registerPerson = this.registerPerson.bind(this);
         this.setPersonToForm = this.setPersonToForm.bind(this);
         this.updatePerson = this.updatePerson.bind(this);
+        this.deletePerson = this.deletePerson.bind(this);
         this.populatePeopleData = this.populatePeopleData.bind(this);
     }
 
@@ -169,6 +170,7 @@ export class Home extends Component
                             relationOptions={this.state.people} 
                             registerPerson={this.registerPerson}
                             updatePerson={this.updatePerson} 
+                            deletePerson={this.deletePerson}
                             selectedPerson={selectedPerson}>
                         </PersonForm>
                     </ModalBody>
@@ -224,7 +226,6 @@ export class Home extends Component
             }
         }
 
-        console.log(person);
         this.setState({ 
             formOpen: false,
             people: [...people, person],
@@ -279,9 +280,6 @@ export class Home extends Component
     async updatePartner(person) 
     {
         let partner = this.state.people.find(p => p.id.toString() === person.pid);
-        console.log(partner);
-        console.log(this.state.people[0].id);
-        console.log(person.pid);
         partner.mid = (partner.mid) ? partner.mid : 0;
         partner.fid = (partner.fid) ? partner.fid : 0;
 
@@ -292,5 +290,20 @@ export class Home extends Component
             await PersonData.updatePerson(partner);
             return partner;
         }
+    }
+
+    async deletePerson(person) 
+    {
+        this.setState({ loading: true })
+        await PersonData.deletePerson(person.id);
+
+        const people = this.state.people;
+        people.splice(people.findIndex((p) => p.id === person.id), 1);
+
+        this.setState({ 
+            formOpen: false,
+            people: people,
+            loading: false
+        });
     }
 }

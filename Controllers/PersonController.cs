@@ -77,4 +77,22 @@ public class PersonController : ControllerBase
             return false;
         }
     }
+
+    [HttpDelete]
+    [Route("{personId}")]
+    public bool Delete(int personId) 
+    {
+        try 
+        {
+            _dbContext.People.Remove(_dbContext.People.First((p) => p.Id == personId));
+            _dbContext.SaveChanges();
+
+            return true;
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception);
+            return false;
+        }
+    }
 }

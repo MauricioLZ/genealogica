@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, FormGroup, Label, Col, Input, Button } from 'reactstrap';
+import { Form, FormGroup, Label, Col, Input, Button, Row } from 'reactstrap';
 import './PersonForm.css'
 
 export class PersonForm extends Component 
@@ -12,6 +12,7 @@ export class PersonForm extends Component
         
         this.changeValue = this.changeValue.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.onDelete = this.onDelete.bind(this);
     }
 
     componentDidMount() 
@@ -48,9 +49,16 @@ export class PersonForm extends Component
         }
     }
 
+    onDelete(event) 
+    {
+        event.preventDefault();
+        this.props.deletePerson(this.props.selectedPerson);
+    }
+
     render()
     {
         let relationOptionsOrdered = this.props.relationOptions;
+        const submitOffset = (this.props.selectedPerson) ? 2 : 8;
 
         if (relationOptionsOrdered) 
         {
@@ -65,7 +73,7 @@ export class PersonForm extends Component
             <FormGroup row>
                 <Label for="name" sm={3}>Name</Label>
                 <Col sm={9}>
-                    <Input name="name" placeholder="Name" type="text" value={this.state.person.name} onChange={this.changeValue}/>
+                    <Input id="name" name="name" placeholder="Name" type="text" value={this.state.person.name} onChange={this.changeValue}/>
                 </Col>
             </FormGroup>
             <FormGroup row>
@@ -82,19 +90,19 @@ export class PersonForm extends Component
             <FormGroup row>
                 <Label for="treePhoto" sm={3}>Photo</Label>
                 <Col sm={9}>
-                    <Input name="treePhoto" placeholder="Photo link" type="text"  value={this.state.person.img} onChange={this.changeValue}/>
+                    <Input id="treePhoto" name="treePhoto" placeholder="Photo link" type="text"  value={this.state.person.img} onChange={this.changeValue}/>
                 </Col>
             </FormGroup>
             <FormGroup row>
                 <Label for="birth" sm={3}>Date of birth</Label>
                 <Col sm={9}>
-                    <Input name="birth" placeholder="Date of birth" type="date"  value={this.state.person.birth} onChange={this.changeValue}/>
+                    <Input id="birth" name="birth" placeholder="Date of birth" type="date"  value={this.state.person.birth} onChange={this.changeValue}/>
                 </Col>
             </FormGroup>
             <FormGroup row>
                 <Label for="death" sm={3}>Date of death</Label>
                 <Col sm={9}>
-                    <Input name="death" placeholder="Date of death" type="date" value={this.state.person.death} onChange={this.changeValue}/>
+                    <Input id="death" name="death" placeholder="Date of death" type="date" value={this.state.person.death} onChange={this.changeValue}/>
                 </Col>
             </FormGroup>
             <FormGroup row>
@@ -134,9 +142,16 @@ export class PersonForm extends Component
                 </Col>
             </FormGroup>
             <FormGroup check row>
-                <Col sm={{ offset: 8, size: 4 }}>
-                    <Button color='primary' type='submit'>Confirm</Button>
-                </Col>
+                <Row>
+                    { this.props.selectedPerson &&
+                        <Col sm={{ offset: 2, size: 4 }}>
+                            <Button color='danger' type='button' onClick={this.onDelete}>Delete</Button>
+                        </Col>
+                    }
+                    <Col sm={{ offset: submitOffset, size: 4 }}>
+                        <Button color='primary' type='submit'>Confirm</Button>
+                    </Col>
+                </Row>
             </FormGroup>
         </Form>;
     }
