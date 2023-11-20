@@ -7,4 +7,6 @@ public class User
     public string? Password { get; set; }
     public string? FacebookId { get; set; }
     public int? TreeId { get; set; }
+    public string? Token { get; set; }
+    public bool? Validated { get; set; }
 }

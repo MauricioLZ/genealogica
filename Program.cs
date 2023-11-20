@@ -2,13 +2,16 @@ using Microsoft.EntityFrameworkCore;
 
 internal class Program
 {
+    public static Settings settings = new Settings();
+
     private static void Main(string[] args)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-        Settings settings = new Settings
+        settings = new Settings
         {
-            azureConnectionString = builder.Configuration.GetConnectionString("azureConnectionString")
+            azureConnectionString = builder.Configuration.GetConnectionString("azureConnectionString"),
+            emailPassword = builder.Configuration.GetValue<string>("emailPassword")
         };
         builder.Services.AddControllersWithViews();
         builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(settings.azureConnectionString));
@@ -28,7 +31,14 @@ internal class Program
 
         app.MapControllerRoute(
             name: "default",
-            pattern: "{controller}/{action=Index}/{id?}");
+            pattern: "{controller}/{action=Index}/{id?}"
+        );
+
+        // app.Map("/user/confirm", async context =>
+        // {
+        //     context.Response.ContentType = "application/javascript";
+        //     await context.Response.SendFileAsync(Path.Combine(Directory.GetCurrentDirectory(), "ClientApp/src/components/", "EmailConfirmPage.js"));
+        // });
 
         app.MapFallbackToFile("index.html");
 

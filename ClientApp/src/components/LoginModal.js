@@ -134,8 +134,8 @@ export class LoginModal extends Component
             const id = await UserData.addUser(user);
             if (id > 0) 
             {
-                this.loginUser(userForm);
-                //this.setState({ success: "A validation email has been sent to you" });
+                //this.loginUser(userForm);
+                this.setState({ success: "A validation email has been sent to you" });
             }
             else 
             {

@@ -1,4 +1,7 @@
 using System.Data;
+using System.Net;
+using System.Net.Mail;
+using System.Security.Cryptography;
 using genealogica.DataModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -21,25 +24,77 @@ public class UserController : ControllerBase
     [Route("Registration")]
     public int RegisterUser(User user)
     {
-        // using (SqlConnection connection = new SqlConnection(Settings.instance.ServerConnectionString)) 
-        // {
-        //     await connection.OpenAsync();
-            try 
-            {
-                int treeId = new TreeController(_dbContext).Create(new Tree());
-                user.TreeId = treeId;
-                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+        try 
+        {
+            int treeId = new TreeController(_dbContext).Create(new Tree());
+            user.TreeId = treeId;
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
-                _dbContext.Users.Add(user);
-                _dbContext.SaveChanges();
-                return user.Id;
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine(exception);
-                return -1;
-            }
-        //}
+            _dbContext.Users.Add(user);
+            _dbContext.SaveChanges();
+            return user.Id;
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception);
+            return -1;
+        }
+    }
+
+    public string GenerateToken()
+    {
+        byte[] tokenData = new byte[32];
+        using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(tokenData);
+        }
+        string token = Convert.ToBase64String(tokenData);
+        return token;
+    }
+
+    [HttpPost]
+    [Route("SendConfirmation")]
+    public void SendConfirmationEmail([FromBody]string userEmail)
+    {
+        string token = GenerateToken();
+        string confirmationLink = $"https://genealogica.azurewebsites.net/Confirm?email={userEmail}&token={token}";
+        //string confirmationLink = $"https://localhost:44440/Confirm?email={userEmail}&token={token}";
+
+        MailMessage mail = new MailMessage("mlopzcomercial@gmail.com", userEmail) {
+            Subject = "Confirm Your Signup",
+            Body = $@"<html>
+                        <body>
+                            <h3>Thanks for signing up to Genealogica!</h3>
+                            <p>Please confirm your email by clicking <a href='{confirmationLink}'>HERE</a>.</p>
+                        </body>
+                    </html>",
+            IsBodyHtml = true
+        };
+
+        SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587) {
+            Credentials = new NetworkCredential("mlopzcomercial@gmail.com", Program.settings.emailPassword),
+            EnableSsl = true
+        };
+        smtp.Send(mail);
+
+        User user = _dbContext.Users.First((u) => u.Username == userEmail);
+        user.Token = token;
+        _dbContext.Users.Update(user);
+        _dbContext.SaveChanges();
+    }
+
+    [HttpPost]
+    [Route("Confirm")]
+    public void ConfirmEmail([FromBody]UserConfirmationObject userObj) 
+    {
+        User user = _dbContext.Users.First((u) => u.Username == userObj.UserEmail);
+        user.Validated = (user.Token == userObj.Token);
+
+        if (user.Validated == true) 
+        {
+            _dbContext.Users.Update(user);
+            _dbContext.SaveChanges();
+        }
     }
 
     [HttpPost]
