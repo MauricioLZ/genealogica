@@ -1,10 +1,8 @@
-using System.Data;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using genealogica.DataModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace genealogica.Controllers;
