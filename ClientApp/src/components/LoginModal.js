@@ -159,15 +159,23 @@ export class LoginModal extends Component
 
         if (dbUser.id > 0) 
         {
-            Cookies.set('userSession', dbUser.id, { expires: 30 });
-            this.props.setUser(dbUser);
-
-            this.setState({ 
-                user: { ...dbUser, password: '' }
-            });
+            console.log(dbUser);
+            if (dbUser.validated) 
+            {
+                Cookies.set('userSession', dbUser.id, { expires: 30 });
+                this.props.setUser(dbUser);
     
-            this.props.toggle();
-            this.props.populatePeopleData(dbUser.treeId);
+                this.setState({ 
+                    user: { ...dbUser, password: '' }
+                });
+        
+                this.props.toggle();
+                this.props.populatePeopleData(dbUser.treeId);
+            }
+            else 
+            {
+                this.setState({ error: 'Please validate your email to log in' });
+            }
         }
         else if (dbUser.id === 0) 
         {

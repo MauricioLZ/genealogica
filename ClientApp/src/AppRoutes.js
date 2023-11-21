@@ -1,5 +1,5 @@
 import { Home } from "./components/Home";
-import { EmailConfirmPage } from "./components/EmailConfirmPage";
+import EmailConfirmPage from "./components/EmailConfirmPage";
 
 const AppRoutes = [
 	{
@@ -7,7 +7,7 @@ const AppRoutes = [
 		element: <Home />
 	},
 	{
-		path: '/user/confirm',
+		path: '/confirm',
 		element: <EmailConfirmPage/>
 	}
 ];

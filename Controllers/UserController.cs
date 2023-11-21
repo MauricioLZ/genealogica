@@ -86,7 +86,7 @@ public class UserController : ControllerBase
     public void ConfirmEmail([FromBody]UserConfirmationObject userObj) 
     {
         User user = _dbContext.Users.First((u) => u.Username == userObj.UserEmail);
-        user.Validated = (user.Token == userObj.Token);
+        user.Validated = (user.Token?.Replace(' ', '+') == userObj.Token?.Replace(' ', '+'));
 
         if (user.Validated == true) 
         {
